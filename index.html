@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Schoolduler — Turn school chaos into one simple schedule.</title>
+  <meta name="description" content="Forward school emails or screenshots. We extract the dates. Your family calendar updates automatically." />
+  <meta property="og:title" content="Schoolduler — Turn school chaos into one simple schedule." />
+  <meta property="og:description" content="Forward school emails or screenshots. We extract the dates. Your family calendar updates automatically." />
+  <meta property="og:type" content="website" />
+  <meta name="color-scheme" content="light dark" />
+  <style>
+    /* Brand palette (from logo): calm blues + soft green accent */
+    :root{
+      --bg: #0b0c10;            /* dark background */
+      --card: #11141a;          /* card surface */
+      --fg: #f6f8fc;            /* foreground text */
+      --muted: #9aa1ad;         /* secondary text */
+      --brand: #2768b8;         /* primary blue */
+      --brand-2: #6ea8fe;       /* light blue accent */
+      --accent: #86efac;        /* soft green accent */
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius: 16px;
+      --maxw: 980px;
+    }
+    @media (prefers-color-scheme: light){
+      :root{ --bg:#f7f8fb; --card:#ffffff; --fg:#0f1220; --muted:#5b6573; --shadow: 0 10px 30px rgba(22,33,58,.10); }
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;height:100%}
+    body{
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      background:
+        radial-gradient(80rem 60rem at 70% -10%, rgba(110,168,254,.18), transparent 60%),
+        radial-gradient(80rem 60rem at -10% 20%, rgba(181,209,255,.22), transparent 60%),
+        var(--bg);
+      color: var(--fg);
+      line-height:1.5;
+    }
+    .wrap{max-width:var(--maxw); margin:0 auto; padding: clamp(20px, 3vw, 40px);}
+    .topbar{display:flex; align-items:center; justify-content:space-between; gap:16px; padding-top:12px}
+    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg)}
+    .logo{width:42px; height:42px}
+    .brandname{font-weight:800; font-size:20px; letter-spacing:.2px}
+    .hero{text-align:center; padding: clamp(32px, 7vw, 90px) 0 20px}
+    .badge{display:inline-flex; align-items:center; gap:.5rem; color:var(--muted); font-weight:600; letter-spacing:.2px; background:rgba(110,168,254,.12); padding:.35rem .7rem; border-radius:999px;}
+    h1{font-size: clamp(28px, 4.2vw, 52px); line-height:1.08; margin: 16px auto 10px; max-width: 22ch;}
+    .brand-gradient{background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .sub{color:var(--muted); font-size: clamp(16px, 1.6vw, 20px); margin: 0 auto 26px; max-width: 60ch;}
+    .cta-row{display:flex; gap:12px; justify-content:center; flex-wrap: wrap;}
+    .btn{appearance:none; border:0; cursor:pointer; padding:14px 20px; border-radius:12px; font-weight:700; font-size:16px; background: linear-gradient(180deg, var(--brand), #1f5ca6); color:#eaf3ff; box-shadow: var(--shadow); transition: transform .06s ease, filter .2s ease;}
+    .btn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
+    .btn-outline{ background: transparent; color: var(--fg); border:1px solid rgba(110,168,254,.45); }
+    .features{padding: 24px 0 8px;}
+    .grid{display:grid; gap:18px;}
+    @media(min-width:820px){ .features .grid{ grid-template-columns: repeat(3, 1fr);} }
+    .card{ background: var(--card); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius); padding:20px; box-shadow: var(--shadow); }
+    .card h3{margin:10px 0 6px; font-size:20px}
+    .icon{width:32px;height:32px; display:inline-block; color: var(--brand-2)}
+    .muted{color:var(--muted)}
+    .mock{ margin: 24px 0 10px; }
+    .calendar{ background: var(--card); border-radius: var(--radius); overflow:hidden; box-shadow: var(--shadow); border:1px solid rgba(255,255,255,.06); }
+    .cal-head{display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.06)}
+    .cal-title{font-weight:700}
+    .legend{display:flex; gap:10px; align-items:center}
+    .pill{font-size:12px; padding:4px 8px; border-radius:999px; background: rgba(110,168,254,.18); color: var(--brand-2); border:1px solid rgba(110,168,254,.45)}
+    .grid-cal{display:grid; grid-template-columns: repeat(7, 1fr); gap:1px; background: rgba(255,255,255,.06)}
+    .cell{min-height:76px; background: var(--card); position:relative; padding:8px}
+    .cell small{opacity:.7}
+    .event{ position:absolute; left:6px; right:6px; bottom:6px; font-size:12px; padding:6px 8px; border-radius:10px; background: rgba(110,168,254,.18); border:1px dashed rgba(110,168,254,.6); }
+    .event.ok{ background: rgba(134,239,172,.16); border-color: rgba(134,239,172,.6); }
+    .pricing{padding: 8px 0 10px}
+    .pricing .grid{ gap:20px }
+    @media(min-width:820px){ .pricing .grid{ grid-template-columns: 1fr 1fr; } }
+    .price{font-size: clamp(24px, 2.6vw, 34px); font-weight:800}
+    .strike{ text-decoration: line-through; opacity:.6; font-weight:600; }
+    ul.clean{list-style:none; padding:0; margin:10px 0}
+    ul.clean li{display:flex; gap:8px; align-items:flex-start; margin:8px 0}
+    .tick{color: var(--accent); margin-top: 2px}
+    form{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top: 8px}
+    input[type="email"]{ padding:14px 14px; border-radius:12px; border:1px solid rgba(110,168,254,.45); background: transparent; color: var(--fg); min-width:260px; outline:none; }
+    input::placeholder{color: var(--muted)}
+    .foot{opacity:.7; font-size:13px; text-align:center; margin-top:14px}
+    .footer{color:var(--muted); text-align:center; font-size:13px; padding:28px 0 10px}
+    a{color: var(--brand-2); text-decoration: none; border-bottom:1px dotted rgba(110,168,254,.45)}
+    a:hover{opacity:.9}
+  </style>
+</head>
+<body>
+  <div class="wrap topbar">
+    <a class="brand" href="#top" aria-label="Schoolduler home">
+      <!-- Inline SVG logo (calendar + graduation cap) matching the generated logo styling -->
+      <svg class="logo" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#2768b8"/>
+            <stop offset="1" stop-color="#6ea8fe"/>
+          </linearGradient>
+        </defs>
+        <!-- calendar body -->
+        <rect x="8" y="16" width="48" height="40" rx="8" stroke="url(#g1)" stroke-width="3" fill="none"/>
+        <rect x="8" y="24" width="48" height="32" rx="8" fill="none" stroke="url(#g1)" stroke-width="3" />
+        <circle cx="22" cy="16" r="4" fill="#2768b8"/>
+        <circle cx="42" cy="16" r="4" fill="#2768b8"/>
+        <!-- green day pill -->
+        <rect x="20" y="36" width="24" height="12" rx="6" fill="#86efac"/>
+        <!-- cap -->
+        <path d="M32 10l18 6-18 6-18-6 18-6Z" fill="#2768b8"/>
+        <path d="M42 22v6c0 2.2-4.5 4-10 4s-10-1.8-10-4v-6" stroke="#2768b8" stroke-width="2" fill="none"/>
+      </svg>
+      <span class="brandname">Schoolduler</span>
+    </a>
+    <a class="btn btn-outline" href="#signup">Join Beta</a>
+  </div>
+
+  <header class="wrap hero" id="top">
+    <div class="badge">For busy parents who’ve had enough of school chaos</div>
+    <h1>Turn school chaos into <span class="brand-gradient">one simple schedule.</span></h1>
+    <p class="sub">Forward school emails or screenshot WhatsApp messages. We extract dates and add them to your family calendar automatically.</p>
+    <div class="cta-row">
+      <a class="btn" href="#signup">Reserve my spot</a>
+      <a class="btn btn-outline" href="#how">How it works</a>
+    </div>
+    <p class="foot">No new app to check. Works with Google, Apple, and Outlook calendars.</p>
+  </header>
+
+  <main class="wrap">
+    <section class="features" id="how" aria-label="How it works">
+      <div class="grid">
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3>1) Forward</h3>
+          <p class="muted">Send school newsletters/emails to your family’s unique address (e.g. <em>smith-family@schoolduler.com</em>).</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3>2) We parse</h3>
+          <p class="muted">We extract dates/times from text or PDFs. Smart labels like “Inset Day” or “PE Kit”.</p>
+        </div>
+        <div class="card">
+          <div class="icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3>3) It appears</h3>
+          <p class="muted">Events sync to your normal calendar. Optional night-before reminders & weekly digests.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="mock" aria-label="Calendar example">
+      <div class="calendar">
+        <div class="cal-head">
+          <div class="cal-title">September — Schoolduler Family Calendar</div>
+          <div class="legend">
+            <span class="pill">Auto-added</span>
+            <span class="pill" style="background:rgba(134,239,172,.18); color:#d7ffe9; border-color:rgba(134,239,172,.55)">Reminder</span>
+          </div>
+        </div>
+        <div class="grid-cal" aria-hidden="true">
+          <div class="cell"><small>Mon 1</small><div class="event">Non-Uniform Day</div></div>
+          <div class="cell"><small>Tue 2</small></div>
+          <div class="cell"><small>Wed 3</small><div class="event ok">PE Kit — reminder 8pm</div></div>
+          <div class="cell"><small>Thu 4</small></div>
+          <div class="cell"><small>Fri 5</small><div class="event">Class Assembly · 2:00pm</div></div>
+          <div class="cell"><small>Sat 6</small></div>
+          <div class="cell"><small>Sun 7</small></div>
+        </div>
+      </div>
+      <p class="foot">Example: all events pulled from one forwarded newsletter + one WhatsApp screenshot.</p>
+    </section>
+
+    <section class="pricing" id="pricing" aria-label="Pricing">
+      <div class="grid">
+        <div class="card">
+          <h3>Free</h3>
+          <p><span class="price">£0</span> / forever</p>
+          <ul class="clean">
+            <li><span class="tick">✓</span> 1 school / child</li>
+            <li><span class="tick">✓</span> Email → calendar parsing</li>
+            <li><span class="tick">✓</span> Basic event categories</li>
+          </ul>
+          <a class="btn btn-outline" href="#signup">Start free</a>
+        </div>
+        <div class="card">
+          <h3>Plus</h3>
+          <p><span class="price">£5</span> / month <span class="muted">or</span> <span class="strike">£60</span> <strong>£50</strong> / year</p>
+          <ul class="clean">
+            <li><span class="tick">✓</span> Multiple schools / kids</li>
+            <li><span class="tick">✓</span> WhatsApp/Telegram bot for screenshots</li>
+            <li><span class="tick">✓</span> Night-before reminders</li>
+            <li><span class="tick">✓</span> Weekly email digest</li>
+            <li><span class="tick">✓</span> Priority parsing & support</li>
+          </ul>
+          <a class="btn" href="#signup">Join the beta</a>
+        </div>
+      </div>
+    </section>
+
+    <section id="signup" class="wrap" aria-label="Signup">
+      <div class="card" style="max-width:760px; margin: 0 auto;">
+        <h3 style="margin-top:0">Join the Schoolduler Beta</h3>
+        <p class="muted" style="margin-top:6px">Drop your email. We’ll invite you as soon as your school is supported.</p>
+        <form action="FORM_ACTION_HERE" method="POST">
+          <input type="email" name="email" placeholder="your@email.com" required aria-label="Email address" />
+          <button class="btn" type="submit">Reserve my spot</button>
+        </form>
+        <p class="foot">Privacy-first. We never sell or share your data.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="wrap footer">
+    <div>“Schoolduler — the school scheduler for busy parents.” • <a href="#top">Back to top</a></div>
+    <div style="margin-top:6px">Built by parents, for parents.</div>
+  </footer>
+
+  <script>
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click', e=>{
+        const id = a.getAttribute('href').slice(1);
+        const el = document.getElementById(id);
+        if(!el) return;
+        e.preventDefault();
+        el.scrollIntoView({behavior:'smooth', block:'start'});
+        history.pushState(null, '', '#'+id);
+      });
+    });
+  </script>
+</body>
+</html>
