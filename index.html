@@ -558,6 +558,62 @@ nav[role="navigation"] {
 }
 
 
+    /* ===== iPhone fix: agenda layout, no clipping, clean alignment ===== */
+@media (max-width: 640px) {
+  /* Use a 2-col grid: date (fixed), content (fluid) */
+  .sd-cal__grid { grid-template-columns: 1fr; }
+  .sd-cal__day {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    align-items: start;
+    gap: 10px;
+    padding: 12px;
+    min-height: unset;   /* don't force equal tiles */
+  }
+
+  /* Make the date a normal grid cell (no absolute positioning) */
+  .sd-cal__date {
+    position: static;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #e3e8ff;
+    background: #f3f5ff;
+    border-radius: 10px;
+    font-size: 13px;
+    line-height: 1;
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  /* Content sits in column 2 */
+  .sd-cal__day > *:not(.sd-cal__date) {
+    grid-column: 2;
+  }
+
+  /* Show full event text (no clipping), wrap long words/URLs */
+  .sd-cal__event {
+    display: block;
+    -webkit-line-clamp: unset;   /* iOS Safari */
+    overflow: visible;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+  }
+
+  /* Tighten tiny labels if you re-show DOW on mobile somewhere else */
+  .sd-cal__dow { display: none; }
+
+  /* iOS Safari zoom/text-size adjust consistency */
+  .sd-cal { -webkit-text-size-adjust: 100%; }
+}
+
+/* Optional: if list bullets/margins sneak in from global CSS */
+.sd-cal__grid { list-style: none; margin: 0; padding: 0; }
+
+
 
     
   </style>
