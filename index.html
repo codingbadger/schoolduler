@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Schoolduler — Turn school chaos into one simple schedule.</title>
   <meta name="description" content="Forward school emails or screenshots. We extract the dates. Your family calendar updates automatically." />
   <meta property="og:title" content="Schoolduler — Turn school chaos into one simple schedule." />
@@ -86,6 +86,204 @@
     a:hover{opacity:.9}
 
 
+    /* ------------- Base & Layout ------------- */
+:root {
+  --container-pad: 16px;
+  --maxw: 1120px;
+}
+
+html, body {
+  overflow-x: hidden; /* prevent sideways scroll on mobile */
+}
+
+/* A generic container pattern */
+.container,
+.wrap,
+.section-inner {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--container-pad);
+}
+
+/* Make images and videos scale down on small screens */
+img, svg, video, canvas {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Buttons shouldn’t overflow on mobile */
+button, .btn, input[type="submit"] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 18px;
+  line-height: 1.2;
+  white-space: nowrap;
+  border-radius: 10px;
+  text-decoration: none;
+}
+
+/* Forms should be 100% width on mobile */
+input[type="text"],
+input[type="email"],
+input[type="tel"],
+textarea,
+select {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #e2e2e2;
+}
+
+/* Avoid giant headings overflowing */
+h1 { line-height: 1.1; }
+h2, h3 { line-height: 1.2; }
+
+/* ------------- Header / Nav ------------- */
+.header,
+nav[role="navigation"] {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: inherit; /* keeps whatever bg you had */
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px var(--container-pad);
+}
+
+.logo { max-height: 36px; }
+
+/* ------------- Hero ------------- */
+.hero {
+  padding: 48px var(--container-pad);
+  text-align: center;
+}
+
+.hero h1 {
+  /* clamp(min, preferred, max) keeps it fluid */
+  font-size: clamp(28px, 6vw, 56px);
+  margin: 10px 0 16px;
+}
+
+.hero p {
+  font-size: clamp(16px, 3.8vw, 20px);
+  margin: 0 auto 18px;
+  max-width: 38ch;
+}
+
+.hero .cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* ------------- “How it works” / Features ------------- */
+.features-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 24px;
+}
+
+.feature-card {
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid #eee;
+  background: #fff;
+}
+
+/* ------------- Pricing ------------- */
+.pricing {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.plan {
+  padding: 20px;
+  border-radius: 14px;
+  border: 1px solid #eee;
+  background: #fff;
+}
+
+.plan h3 { margin-top: 0; }
+
+/* ------------- Calendar Mockup ------------- */
+.calendar-mock {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.calendar-mock * {
+  /* ensure nothing inside forces overflow */
+  min-width: 0;
+}
+
+/* ------------- Footer ------------- */
+.footer {
+  padding: 28px var(--container-pad);
+  text-align: center;
+  font-size: 14px;
+}
+
+/* ------------- Mobile tweaks ------------- */
+@media (max-width: 900px) {
+  .features-grid { grid-template-columns: 1fr 1fr; }
+  .pricing       { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .nav-inner { padding: 10px var(--container-pad); }
+  .logo { max-height: 32px; }
+
+  .hero { padding: 36px var(--container-pad); }
+  .hero p { max-width: 46ch; }
+
+  .features-grid { grid-template-columns: 1fr; }
+  .feature-card { padding: 16px; }
+
+  .plan { padding: 16px; }
+
+  /* Ensure any side-by-side columns stack */
+  .two-col, .cols-2, .split {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: 16px !important;
+  }
+
+  /* Ensure buttons don’t overflow narrow screens */
+  .btn, button, input[type="submit"] {
+    width: 100%;
+    max-width: 500px;
+    margin-inline: auto;
+  }
+
+  /* Kill any accidental horizontal overflow */
+  .hero, .section, .pricing, .features, .form, .calendar-mock {
+    overflow-x: clip;
+  }
+}
+
+/* ------------- Utility ------------- */
+.hidden-mobile { display: none; }
+@media (min-width: 641px) { .hidden-mobile { display: revert; } }
+
+.center { text-align: center; }
+.stack-16 > * + * { margin-top: 16px; }
+.stack-24 > * + * { margin-top: 24px; }
+
+
+    
 
 
     /* ---- Schoolduler Form: Scoped Reset & Theme ---- */
