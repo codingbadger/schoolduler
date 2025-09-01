@@ -1,888 +1,346 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Schoolduler — Turn school chaos into one simple schedule.</title>
-  <meta name="description" content="Forward school emails or screenshots. We extract the dates. Your family calendar updates automatically." />
-  <meta property="og:title" content="Schoolduler — Turn school chaos into one simple schedule." />
-  <meta property="og:description" content="Forward school emails or screenshots. We extract the dates. Your family calendar updates automatically." />
-  <meta property="og:type" content="website" />
-  <meta name="color-scheme" content="light dark" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Schoolduler — Tame the School Chaos</title>
+  <meta name="description" content="Forward school emails, screenshots, and notices into one clean family calendar. Schoolduler turns chaos into clarity." />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
-    /* Brand palette (from logo): calm blues + soft green accent */
-    :root{
-      --bg: #0b0c10;            /* dark background */
-      --card: #11141a;          /* card surface */
-      --fg: #f6f8fc;            /* foreground text */
-      --muted: #9aa1ad;         /* secondary text */
-      --brand: #2768b8;         /* primary blue */
-      --brand-2: #6ea8fe;       /* light blue accent */
-      --accent: #86efac;        /* soft green accent */
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
+    /* ==========================================================
+       Base reset (scoped to this page only)
+    ========================================================== */
+    :root {
+      --bg: #0b0f16;          /* dark background for contrast */
+      --panel: #0f1520;       /* cards */
+      --ink: #e6eaf2;         /* primary text */
+      --muted: #a7b0c0;       /* secondary text */
+      --brand: #8aa0ff;       /* accent */
+      --brand-2: #6ee7b7;     /* secondary accent */
+      --border: #1f2532;      /* subtle borders */
+      --shadow: 0 10px 30px rgba(0,0,0,.25);
       --radius: 16px;
-      --maxw: 980px;
+      --maxw: 1120px;
     }
-    @media (prefers-color-scheme: light){
-      :root{ --bg:#f7f8fb; --card:#ffffff; --fg:#0f1220; --muted:#5b6573; --shadow: 0 10px 30px rgba(22,33,58,.10); }
+
+    html, body { height: 100%; }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--ink);
+      background: radial-gradient(1200px 800px at 10% -10%, rgba(138,160,255,.15), transparent 60%),
+                  radial-gradient(900px 600px at 100% 0%, rgba(110,231,183,.10), transparent 50%),
+                  var(--bg);
     }
-    *{box-sizing:border-box}
-    html,body{margin:0;height:100%}
-    body{
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
-      background:
-        radial-gradient(80rem 60rem at 70% -10%, rgba(110,168,254,.18), transparent 60%),
-        radial-gradient(80rem 60rem at -10% 20%, rgba(181,209,255,.22), transparent 60%),
-        var(--bg);
-      color: var(--fg);
-      line-height:1.5;
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; height: auto; }
+
+    /* ==========================================================
+       Layout helpers
+    ========================================================== */
+    .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: 20px; }
+    .stack-16 > * + * { margin-top: 16px; }
+    .stack-24 > * + * { margin-top: 24px; }
+    .stack-32 > * + * { margin-top: 32px; }
+
+    /* ==========================================================
+       Header
+    ========================================================== */
+    .hdr { position: sticky; top: 0; z-index: 50; backdrop-filter: saturate(1.2) blur(6px); background: color-mix(in srgb, var(--bg) 80%, transparent); border-bottom: 1px solid var(--border); }
+    .hdr__inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px; }
+    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .2px; }
+    .brand__logo { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, var(--brand), #b9c4ff); box-shadow: inset 0 0 0 2px rgba(255,255,255,.15); }
+    .brand__name { font-size: 18px; }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 999px; border: 1px solid var(--border); background: #151b29; color: var(--ink); box-shadow: var(--shadow); font-weight: 600; }
+    .btn--ghost { background: transparent; box-shadow: none; }
+    .btn--brand { background: linear-gradient(135deg, var(--brand), #a8b6ff); color: #0b0f16; border-color: transparent; }
+
+    /* ==========================================================
+       Hero — fixed alignment & responsive type
+    ========================================================== */
+    .hero { padding: 56px 0 24px; }
+    .hero__grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 32px; align-items: center; }
+    .eyebrow { color: var(--brand-2); font-weight: 700; letter-spacing: .16em; text-transform: uppercase; font-size: 12px; }
+    .hero__title { margin: 8px 0 12px; font-size: clamp(28px, 6vw, 54px); line-height: 1.05; letter-spacing: -0.02em; }
+    .hero__desc { color: var(--muted); font-size: clamp(16px, 2.6vw, 18px); max-width: 58ch; }
+    .hero__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+
+    .panel { background: #0d1320; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+
+    @media (max-width: 900px) {
+      .hero { padding: 40px 0 16px; }
+      .hero__grid { grid-template-columns: 1fr; }
+      .hero__media { order: -1; }
     }
-    .wrap{max-width:var(--maxw); margin:0 auto; padding: clamp(20px, 3vw, 40px);}
-    .topbar{display:flex; align-items:center; justify-content:space-between; gap:16px; padding-top:12px}
-    .brand{display:flex; align-items:center; gap:12px; text-decoration:none; color:var(--fg)}
-    .logo{width:42px; height:42px}
-    .brandname{font-weight:800; font-size:20px; letter-spacing:.2px}
-    .hero{text-align:center; padding: clamp(32px, 7vw, 90px) 0 20px}
-    .badge{display:inline-flex; align-items:center; gap:.5rem; color:var(--muted); font-weight:600; letter-spacing:.2px; background:rgba(110,168,254,.12); padding:.35rem .7rem; border-radius:999px;}
-    h1{font-size: clamp(28px, 4.2vw, 52px); line-height:1.08; margin: 16px auto 10px; max-width: 22ch;}
-    .brand-gradient{background:linear-gradient(90deg,var(--brand),var(--brand-2));-webkit-background-clip:text;background-clip:text;color:transparent}
-    .sub{color:var(--muted); font-size: clamp(16px, 1.6vw, 20px); margin: 0 auto 26px; max-width: 60ch;}
-    .cta-row{display:flex; gap:12px; justify-content:center; flex-wrap: wrap;}
-    .btn{appearance:none; border:0; cursor:pointer; padding:14px 20px; border-radius:12px; font-weight:700; font-size:16px; background: linear-gradient(180deg, var(--brand), #1f5ca6); color:#eaf3ff; box-shadow: var(--shadow); transition: transform .06s ease, filter .2s ease;}
-    .btn:hover{ transform: translateY(-1px); filter: brightness(1.05); }
-    .btn-outline{ background: transparent; color: var(--fg); border:1px solid rgba(110,168,254,.45); }
-    .features{padding: 24px 0 8px;}
-    .grid{display:grid; gap:18px;}
-    @media(min-width:820px){ .features .grid{ grid-template-columns: repeat(3, 1fr);} }
-    .card{ background: var(--card); border: 1px solid rgba(255,255,255,.06); border-radius: var(--radius); padding:20px; box-shadow: var(--shadow); }
-    .card h3{margin:10px 0 6px; font-size:20px}
-    .icon{width:32px;height:32px; display:inline-block; color: var(--brand-2)}
-    .muted{color:var(--muted)}
-    .mock{ margin: 24px 0 10px; }
-    .calendar{ background: var(--card); border-radius: var(--radius); overflow:hidden; box-shadow: var(--shadow); border:1px solid rgba(255,255,255,.06); }
-    .cal-head{display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border-bottom:1px solid rgba(255,255,255,.06)}
-    .cal-title{font-weight:700}
-    .legend{display:flex; gap:10px; align-items:center}
-    .pill{font-size:12px; padding:4px 8px; border-radius:999px; background: rgba(110,168,254,.18); color: var(--brand-2); border:1px solid rgba(110,168,254,.45)}
-    .grid-cal{display:grid; grid-template-columns: repeat(7, 1fr); gap:1px; background: rgba(255,255,255,.06)}
-    .cell{min-height:76px; background: var(--card); position:relative; padding:8px}
-    .cell small{opacity:.7}
-    .event{ position:absolute; left:6px; right:6px; bottom:6px; font-size:12px; padding:6px 8px; border-radius:10px; background: rgba(110,168,254,.18); border:1px dashed rgba(110,168,254,.6); }
-    .event.ok{ background: rgba(134,239,172,.16); border-color: rgba(134,239,172,.6); }
-    .pricing{padding: 8px 0 10px}
-    .pricing .grid{ gap:20px }
-    @media(min-width:820px){ .pricing .grid{ grid-template-columns: 1fr 1fr; } }
-    .price{font-size: clamp(24px, 2.6vw, 34px); font-weight:800}
-    .strike{ text-decoration: line-through; opacity:.6; font-weight:600; }
-    ul.clean{list-style:none; padding:0; margin:10px 0}
-    ul.clean li{display:flex; gap:8px; align-items:flex-start; margin:8px 0}
-    .tick{color: var(--accent); margin-top: 2px}
-    form{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin-top: 8px}
-    input[type="email"]{ padding:14px 14px; border-radius:12px; border:1px solid rgba(110,168,254,.45); background: transparent; color: var(--fg); min-width:260px; outline:none; }
-    input::placeholder{color: var(--muted)}
-    .foot{opacity:.7; font-size:13px; text-align:center; margin-top:14px}
-    .footer{color:var(--muted); text-align:center; font-size:13px; padding:28px 0 10px}
-    a{color: var(--brand-2); text-decoration: none; border-bottom:1px dotted rgba(110,168,254,.45)}
-    a:hover{opacity:.9}
 
-
-    /* ------------- Base & Layout ------------- */
-:root {
-  --container-pad: 16px;
-  --maxw: 1120px;
-}
-
-html, body {
-  overflow-x: hidden; /* prevent sideways scroll on mobile */
-}
-
-/* A generic container pattern */
-.container,
-.wrap,
-.section-inner {
-  width: 100%;
-  max-width: var(--maxw);
-  margin-inline: auto;
-  padding-inline: var(--container-pad);
-}
-
-/* Make images and videos scale down on small screens */
-img, svg, video, canvas {
-  max-width: 100%;
-  height: auto;
-  display: block;
-}
-
-/* Buttons shouldn’t overflow on mobile */
-button, .btn, input[type="submit"] {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px 18px;
-  line-height: 1.2;
-  white-space: nowrap;
-  border-radius: 10px;
-  text-decoration: none;
-}
-
-/* Forms should be 100% width on mobile */
-input[type="text"],
-input[type="email"],
-input[type="tel"],
-textarea,
-select {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
-  padding: 12px 14px;
-  border-radius: 10px;
-  border: 1px solid #e2e2e2;
-}
-
-/* Avoid giant headings overflowing */
-h1 { line-height: 1.1; }
-h2, h3 { line-height: 1.2; }
-
-/* ------------- Header / Nav ------------- */
-.header,
-nav[role="navigation"] {
-  position: sticky;
-  top: 0;
-  z-index: 50;
-  background: inherit; /* keeps whatever bg you had */
-}
-
-.nav-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 12px var(--container-pad);
-}
-
-.logo { max-height: 36px; }
-
-/* ------------- Hero ------------- */
-.hero {
-  padding: 48px var(--container-pad);
-  text-align: center;
-}
-
-.hero h1 {
-  /* clamp(min, preferred, max) keeps it fluid */
-  font-size: clamp(28px, 6vw, 56px);
-  margin: 10px 0 16px;
-}
-
-.hero p {
-  font-size: clamp(16px, 3.8vw, 20px);
-  margin: 0 auto 18px;
-  max-width: 38ch;
-}
-
-.hero .cta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-/* ------------- “How it works” / Features ------------- */
-.features-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 24px;
-}
-
-.feature-card {
-  padding: 18px;
-  border-radius: 14px;
-  border: 1px solid #eee;
-  background: #fff;
-}
-
-/* ------------- Pricing ------------- */
-.pricing {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
-}
-
-.plan {
-  padding: 20px;
-  border-radius: 14px;
-  border: 1px solid #eee;
-  background: #fff;
-}
-
-.plan h3 { margin-top: 0; }
-
-/* ------------- Calendar Mockup ------------- */
-.calendar-mock {
-  border: 1px solid #eee;
-  border-radius: 14px;
-  overflow: hidden;
-}
-
-.calendar-mock * {
-  /* ensure nothing inside forces overflow */
-  min-width: 0;
-}
-
-/* ------------- Footer ------------- */
-.footer {
-  padding: 28px var(--container-pad);
-  text-align: center;
-  font-size: 14px;
-}
-
-/* ------------- Mobile tweaks ------------- */
-@media (max-width: 900px) {
-  .features-grid { grid-template-columns: 1fr 1fr; }
-  .pricing       { grid-template-columns: 1fr; }
-}
-
-@media (max-width: 640px) {
-  .nav-inner { padding: 10px var(--container-pad); }
-  .logo { max-height: 32px; }
-
-  .hero { padding: 36px var(--container-pad); }
-  .hero p { max-width: 46ch; }
-
-  .features-grid { grid-template-columns: 1fr; }
-  .feature-card { padding: 16px; }
-
-  .plan { padding: 16px; }
-
-  /* Ensure any side-by-side columns stack */
-  .two-col, .cols-2, .split {
-    display: grid !important;
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-  }
-
-  /* Ensure buttons don’t overflow narrow screens */
-  .btn, button, input[type="submit"] {
-    width: 100%;
-    max-width: 500px;
-    margin-inline: auto;
-  }
-
-  /* Kill any accidental horizontal overflow */
-  .hero, .section, .pricing, .features, .form, .calendar-mock {
-    overflow-x: clip;
-  }
-}
-
-/* ------------- Utility ------------- */
-.hidden-mobile { display: none; }
-@media (min-width: 641px) { .hidden-mobile { display: revert; } }
-
-.center { text-align: center; }
-.stack-16 > * + * { margin-top: 16px; }
-.stack-24 > * + * { margin-top: 24px; }
-
-
-    
-
-
-    /* ---- Schoolduler Form: Scoped Reset & Theme ---- */
-.schoolduler-form {
-  --sd-primary: #382fff;
-  --sd-primary-hover: #2e26cc;
-  --sd-ring: #cfd0ff;
-  --sd-text: #111;
-  --sd-muted: #555;
-  --sd-bg: #fff;
-
-  /* layout */
-  max-width: 480px;
-  width: 100%;
-  margin: 2.5rem auto;
-  padding: 1.75rem;
-  background: var(--sd-bg);
-  border-radius: 16px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-
-  /* isolate from global flex/typography rules */
-  display: block;
-  position: relative;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
-  color: var(--sd-text);
-  line-height: 1.4;
-}
-
-.schoolduler-form * {
-  box-sizing: border-box;
-}
-
-/* headings & copy */
-.schoolduler-form h2 {
-  margin: 0 0 0.25rem;
-  font-size: 1.6rem;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--sd-primary);
-}
-
-.schoolduler-form .lead {
-  margin: 0 0 1.25rem;
-  color: var(--sd-muted);
-  font-size: 0.98rem;
-}
-
-/* fields */
-.schoolduler-form .field {
-  margin-bottom: 0.9rem;
-}
-
-.schoolduler-form label {
-  display: block;               /* fixes inline label wrapping */
-  margin-bottom: 0.4rem;
-  font-weight: 600;
-  color: #333;
-}
-
-.schoolduler-form input,
-.schoolduler-form textarea {
-  appearance: none;             /* neutralize iOS/Chrome quirks */
-  -webkit-appearance: none;
-  width: 100%;
-  display: block;
-  padding: 0.68rem 0.8rem;
-  border: 1px solid #d6d6d6;    /* avoid theme borders */
-  border-radius: 10px;
-  background: #fff;
-  color: #111;
-  font: inherit;                /* inherit site font */
-  outline: none;
-  transition: box-shadow .15s ease, border-color .15s ease;
-}
-
-.schoolduler-form textarea {
-  min-height: 110px;
-  resize: vertical;
-}
-
-.schoolduler-form input::placeholder,
-.schoolduler-form textarea::placeholder {
-  color: #9aa0a6;
-}
-
-/* focus states */
-.schoolduler-form input:focus,
-.schoolduler-form textarea:focus {
-  border-color: var(--sd-primary);
-  box-shadow: 0 0 0 3px var(--sd-ring);
-}
-
-/* button */
-.schoolduler-form button {
-  width: 100%;
-  display: inline-block;
-  margin-top: 0.4rem;
-  padding: 0.85rem 1rem;
-  border: none;
-  border-radius: 10px;
-  background: var(--sd-primary);
-  color: #fff;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: background .2s ease, transform .02s ease-in-out;
-}
-
-.schoolduler-form button:hover { background: var(--sd-primary-hover); }
-.schoolduler-form button:active { transform: translateY(1px); }
-.schoolduler-form button:disabled { opacity: 0.6; cursor: not-allowed; }
-
-/* status text */
-.schoolduler-form .form-status {
-  margin-top: 0.9rem;
-  font-size: 0.96rem;
-  font-weight: 600;
-}
-.schoolduler-form .form-status.success { color: #1f9d55; }
-.schoolduler-form .form-status.error { color: #d64545; }
-
-/* optional: tidy up on narrow screens (already single-column) */
-@media (min-width: 560px) {
-  .schoolduler-form { padding: 2rem; }
-}
-
-/* if your page has a dark section, you can wrap the form in .dark to invert */
-.dark .schoolduler-form {
-  --sd-bg: #121317;
-  --sd-text: #e9eaee;
-  --sd-muted: #b7b9c3;
-  background: var(--sd-bg);
-  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
-}
-.dark .schoolduler-form input,
-.dark .schoolduler-form textarea {
-  background: #1a1c22;
-  border-color: #2a2d36;
-  color: var(--sd-text);
-}
-
-
-
-/* ===== Schoolduler calendar (scoped) ===== */
-.sd-cal {
-  --sd-gap: 8px;
-  --sd-radius: 14px;
-  --sd-border: #e9eaee;
-  --sd-txt: #111827;
-  --sd-subtxt: #6b7280;
-  --sd-tile: #ffffff;
-  --sd-event-bg: #f8fafc;
-
-  max-width: 960px;
-  margin: 32px auto;
-  padding: 16px;
-  border: 1px solid var(--sd-border);
-  border-radius: var(--sd-radius);
-  background: var(--sd-tile);
-  overflow: hidden;
-}
-
-.sd-cal * { box-sizing: border-box; min-width: 0; }
-
-.sd-cal__head { margin-bottom: 12px; }
-.sd-cal__title {
-  margin: 0 0 4px;
-  font-size: clamp(18px, 2.4vw, 22px);
-  line-height: 1.25;
-  color: var(--sd-txt);
-}
-.sd-cal__sub {
-  margin: 0;
-  font-size: 14px;
-  color: var(--sd-subtxt);
-}
-
-.sd-cal__dow {
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: var(--sd-gap);
-  font-size: 12px;
-  letter-spacing: .02em;
-  text-transform: uppercase;
-  color: var(--sd-subtxt);
-  margin-bottom: var(--sd-gap);
-  padding: 0 2px;
-  text-align: center;
-}
-
-.sd-cal__grid {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
-  gap: var(--sd-gap);
-}
-
-.sd-cal__day {
-  border: 1px solid var(--sd-border);
-  border-radius: var(--sd-radius);
-  padding: 10px;
-  background: var(--sd-tile);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  min-height: 84px;
-}
-
-.sd-cal__day.sd-is-empty {
-  background: linear-gradient(180deg, #fafafa, #fff);
-}
-
-.sd-cal__date {
-  font: 600 14px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-  color: var(--sd-txt);
-}
-
-.sd-cal__event {
-  font-size: 13px;
-  line-height: 1.25;
-  padding: 6px 8px;
-  border-radius: 10px;
-  border: 1px solid var(--sd-border);
-  background: var(--sd-event-bg);
-  overflow: hidden;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;      /* prevent tall tiles */
-  -webkit-box-orient: vertical;
-}
-
-.sd-cal__event.sd-is-subtle {
-  border-style: dashed;
-}
-
-/* ---- Mobile: switch to agenda for readability ---- */
-@media (max-width: 640px) {
-  .sd-cal { padding: 12px; border-radius: 12px; }
-  .sd-cal__dow { display: none; }
-
-  .sd-cal__grid {
-    grid-template-columns: 1fr; /* single column list */
-    gap: 10px;
-  }
-
-  .sd-cal__day {
-    min-height: unset;
-    padding: 12px 12px 12px 52px; /* room for date badge */
-    position: relative;
-  }
-
-  .sd-cal__date {
-    position: absolute;
-    left: 12px; top: 12px;
-    width: 30px; height: 30px;
-    display: inline-flex;
-    align-items: center; justify-content: center;
-    border: 1px solid #e3e8ff;
-    background: #f3f5ff;
-    border-radius: 10px;
-    font-size: 13px;
-  }
-
-  .sd-cal__event { -webkit-line-clamp: 3; }
-}
-
-/* ---- Tablet: slightly tighter tiles ---- */
-@media (min-width: 641px) and (max-width: 900px) {
-  .sd-cal__day { min-height: 72px; padding: 8px; }
-  .sd-cal__event { font-size: 12px; }
-}
-
-
-    /* ===== iPhone fix: agenda layout, no clipping, clean alignment ===== */
-@media (max-width: 640px) {
-  /* Use a 2-col grid: date (fixed), content (fluid) */
-  .sd-cal__grid { grid-template-columns: 1fr; }
-  .sd-cal__day {
-    display: grid;
-    grid-template-columns: 40px 1fr;
-    align-items: start;
-    gap: 10px;
-    padding: 12px;
-    min-height: unset;   /* don't force equal tiles */
-  }
-
-  /* Make the date a normal grid cell (no absolute positioning) */
-  .sd-cal__date {
-    position: static;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid #e3e8ff;
-    background: #f3f5ff;
-    border-radius: 10px;
-    font-size: 13px;
-    line-height: 1;
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  /* Content sits in column 2 */
-  .sd-cal__day > *:not(.sd-cal__date) {
-    grid-column: 2;
-  }
-
-  /* Show full event text (no clipping), wrap long words/URLs */
-  .sd-cal__event {
-    display: block;
-    -webkit-line-clamp: unset;   /* iOS Safari */
-    overflow: visible;
-    white-space: normal;
-    word-break: break-word;
-    overflow-wrap: anywhere;
-  }
-
-  /* Tighten tiny labels if you re-show DOW on mobile somewhere else */
-  .sd-cal__dow { display: none; }
-
-  /* iOS Safari zoom/text-size adjust consistency */
-  .sd-cal { -webkit-text-size-adjust: 100%; }
-}
-
-/* Optional: if list bullets/margins sneak in from global CSS */
-.sd-cal__grid { list-style: none; margin: 0; padding: 0; }
-
-
-
-    /* ===== Schoolduler calendar: visibility hot-fix ===== */
-.sd-cal .sd-cal__event {
-  display: block !important;
-  background: #f8fafc !important;
-  border: 1px solid #dfe3ea !important;
-  border-radius: 10px !important;
-  padding: 8px 10px !important;
-  color: #111827 !important;
-  font-size: 14px !important;
-  line-height: 1.3 !important;
-  white-space: normal !important;
-  word-break: break-word !important;
-  overflow-wrap: anywhere !important;
-  overflow: visible !important;
-  -webkit-line-clamp: unset !important;   /* unclip on iOS */
-  -webkit-box-orient: initial !important;
-}
-
-/* Make sure the day cell doesn't hide children */
-.sd-cal .sd-cal__day {
-  overflow: visible !important;
-  background: #fff;             /* ensure contrast */
-  border: 1px solid #e5e7eb;
-}
-
-/* Date badge readability */
-.sd-cal .sd-cal__date {
-  color: #111827;
-}
-
-/* If some global “reset” is nuking everything inside lists */
-.sd-cal .sd-cal__grid { list-style: none; margin: 0; padding: 0; }
-
-/* If a parent is accidentally hiding content */
-.sd-cal, .sd-cal * {
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-    
-
-    
+    /* ==========================================================
+       Calendar (namespaced: sd-*)
+    ========================================================== */
+    .sd-cal { --sd-gap: 8px; --sd-radius: 14px; --sd-border: #1f2532; --sd-text: var(--ink); --sd-sub: var(--muted); --sd-tile: #0b0f16; --sd-event-bg: #0e1423; --sd-shadow: 0 6px 20px rgba(0,0,0,.25); margin-top: 6px; }
+    .sd-cal__head { margin-bottom: 10px; }
+    .sd-cal__title { margin: 0 0 6px; font-size: 18px; color: var(--ink); }
+    .sd-cal__sub { margin: 0; color: var(--muted); font-size: 13px; }
+
+    .sd-cal__dow { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: var(--sd-gap); font-size: 12px; color: var(--sd-sub); text-transform: uppercase; letter-spacing: .02em; margin: 10px 0 8px; text-align: center; }
+
+    .sd-cal__grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: var(--sd-gap); }
+    .sd-cal__day { border: 1px solid var(--sd-border); border-radius: var(--sd-radius); background: var(--sd-event-bg); padding: 10px; display: flex; flex-direction: column; gap: 6px; min-height: 84px; box-shadow: var(--sd-shadow); }
+    .sd-cal__day.sd-is-empty { background: linear-gradient(180deg,#0d1320,transparent); }
+    .sd-cal__date { font-weight: 700; font-size: 13px; color: var(--sd-sub); }
+
+    /* Category palette */
+    .sd-cal { --sd-col-homework:#60a5fa; --sd-col-sports:#34d399; --sd-col-trip:#fbbf24; --sd-col-club:#a78bfa; --sd-col-reminder:#f87171; }
+
+    .sd-cal__event { display: block; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--sd-border); background: #0f1626; color: var(--sd-text); line-height: 1.3; word-break: break-word; overflow-wrap: anywhere; }
+    .sd-cal__event::before { content:""; display:inline-block; width:8px; height:8px; border-radius: 999px; margin-right: 8px; transform: translateY(-1px); background: var(--sd-col-homework); }
+    .sd-cal__event[data-tag="homework"]::before, .sd-cal__event.sd-cat--homework::before { background: var(--sd-col-homework); }
+    .sd-cal__event[data-tag="sports"]::before,   .sd-cal__event.sd-cat--sports::before   { background: var(--sd-col-sports); }
+    .sd-cal__event[data-tag="trip"]::before,     .sd-cal__event.sd-cat--trip::before     { background: var(--sd-col-trip); }
+    .sd-cal__event[data-tag="club"]::before,     .sd-cal__event.sd-cat--club::before     { background: var(--sd-col-club); }
+    .sd-cal__event[data-tag="reminder"]::before, .sd-cal__event.sd-cat--reminder::before { background: var(--sd-col-reminder); }
+
+    /* Soft tinted backgrounds + left accents */
+    .sd-cal__event { position: relative; border-left: 6px solid var(--sd-col-homework); background: rgba(96,165,250,.10); border-color: rgba(96,165,250,.35); }
+    .sd-cal__event[data-tag="sports"], .sd-cal__event.sd-cat--sports { border-left-color: var(--sd-col-sports); background: rgba(52,211,153,.10); border-color: rgba(52,211,153,.35); }
+    .sd-cal__event[data-tag="trip"], .sd-cal__event.sd-cat--trip { border-left-color: var(--sd-col-trip); background: rgba(251,191,36,.10); border-color: rgba(251,191,36,.35); }
+    .sd-cal__event[data-tag="club"], .sd-cal__event.sd-cat--club { border-left-color: var(--sd-col-club); background: rgba(167,139,250,.10); border-color: rgba(167,139,250,.35); }
+    .sd-cal__event[data-tag="reminder"], .sd-cal__event.sd-cat--reminder { border-left-color: var(--sd-col-reminder); background: rgba(248,113,113,.10); border-color: rgba(248,113,113,.35); }
+
+    /* Mobile layout fix: 2-column agenda for readability */
+    @media (max-width: 640px) {
+      .sd-cal__dow { display: none; }
+      .sd-cal__grid { grid-template-columns: 1fr; gap: 10px; }
+      .sd-cal__day { display: grid; grid-template-columns: 44px 1fr; gap: 12px; padding: 12px; min-height: unset; }
+      .sd-cal__date { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: 1px solid #253047; background: #0b1220; color: #c6d0e0; font-weight: 700; }
+      .sd-cal__day > *:not(.sd-cal__date) { grid-column: 2; }
+      .sd-cal__event { -webkit-line-clamp: unset; overflow: visible; }
+    }
+
+    /* Legend */
+    .sd-cal__legend { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 12px; color: var(--muted); font-size: 13px; }
+    .sd-key { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; background: #0d1320; }
+    .sd-key::before { content:""; width: 10px; height: 10px; border-radius: 999px; background: #fff; }
+    .sd-key.sd-cat--homework::before { background: var(--sd-col-homework); }
+    .sd-key.sd-cat--sports::before   { background: var(--sd-col-sports); }
+    .sd-key.sd-cat--trip::before     { background: var(--sd-col-trip); }
+    .sd-key.sd-cat--club::before     { background: var(--sd-col-club); }
+    .sd-key.sd-cat--reminder::before { background: var(--sd-col-reminder); }
+
+    /* ==========================================================
+       Feature cards & sections
+    ========================================================== */
+    .section { padding: 40px 0; }
+    .features { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px; }
+    .card { background: #0d1320; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+    .card h3 { margin: 0 0 6px; font-size: 18px; }
+    .card p { margin: 0; color: var(--muted); }
+
+    @media (max-width: 900px) { .features { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 640px) { .features { grid-template-columns: 1fr; } }
+
+    /* ==========================================================
+       Waitlist form (Formspree: myzdpnkz)
+    ========================================================== */
+    .form { background: #0d1320; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+    .form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form__row--full { grid-template-columns: 1fr; }
+    .input, .select, .textarea { width: 100%; padding: 12px 14px; border: 1px solid #243048; border-radius: 12px; background: #0b1220; color: var(--ink); font: inherit; }
+    .textarea { min-height: 110px; resize: vertical; }
+    .form__actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .hint { color: var(--muted); font-size: 13px; }
+
+    @media (max-width: 640px) { .form__row { grid-template-columns: 1fr; } }
+
+    .note { color: var(--muted); font-size: 13px; }
+
+    /* ==========================================================
+       Footer
+    ========================================================== */
+    .ftr { padding: 36px 0; color: var(--muted); text-align: center; border-top: 1px solid var(--border); }
   </style>
 </head>
 <body>
-  <div class="wrap topbar">
-    <a class="brand" href="#top" aria-label="Schoolduler home">
-      <!-- Inline SVG logo (calendar + graduation cap) matching the generated logo styling -->
-      <svg class="logo" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-        <defs>
-          <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
-            <stop offset="0" stop-color="#2768b8"/>
-            <stop offset="1" stop-color="#6ea8fe"/>
-          </linearGradient>
-        </defs>
-        <!-- calendar body -->
-        <rect x="8" y="16" width="48" height="40" rx="8" stroke="url(#g1)" stroke-width="3" fill="none"/>
-        <rect x="8" y="24" width="48" height="32" rx="8" fill="none" stroke="url(#g1)" stroke-width="3" />
-        <circle cx="22" cy="16" r="4" fill="#2768b8"/>
-        <circle cx="42" cy="16" r="4" fill="#2768b8"/>
-        <!-- green day pill -->
-        <rect x="20" y="36" width="24" height="12" rx="6" fill="#86efac"/>
-        <!-- cap -->
-        <path d="M32 10l18 6-18 6-18-6 18-6Z" fill="#2768b8"/>
-        <path d="M42 22v6c0 2.2-4.5 4-10 4s-10-1.8-10-4v-6" stroke="#2768b8" stroke-width="2" fill="none"/>
-      </svg>
-      <span class="brandname">Schoolduler</span>
-    </a>
-    <a class="btn btn-outline" href="#signup">Join Beta</a>
-  </div>
-
-  <header class="wrap hero" id="top">
-    <div class="badge">For busy parents who’ve had enough of school chaos</div>
-    <h1>Turn school chaos into <span class="brand-gradient">one simple schedule.</span></h1>
-    <p class="sub">Forward school emails or screenshot WhatsApp messages. We extract dates and add them to your family calendar automatically.</p>
-    <div class="cta-row">
-      <a class="btn" href="#signup">Reserve my spot</a>
-      <a class="btn btn-outline" href="#how">How it works</a>
+  <!-- ======================== Header ======================== -->
+  <header class="hdr">
+    <div class="hdr__inner wrap">
+      <a href="#" class="brand" aria-label="Schoolduler home">
+        <span class="brand__logo" aria-hidden="true"></span>
+        <span class="brand__name">Schoolduler</span>
+      </a>
+      <nav>
+        <a class="btn btn--ghost" href="#how">How it works</a>
+        <a class="btn btn--brand" href="#waitlist">Join the waitlist</a>
+      </nav>
     </div>
-    <p class="foot">No new app to check. Works with Google, Apple, and Outlook calendars.</p>
   </header>
 
-  <main class="wrap">
-    <section class="features" id="how" aria-label="How it works">
-      <div class="grid">
-        <div class="card">
-          <div class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M4 6h16M4 12h16M4 18h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-          </div>
+  <!-- ======================== Hero ========================== -->
+  <section class="hero">
+    <div class="wrap hero__grid">
+      <div>
+        <div class="eyebrow">Built by parents</div>
+        <h1 class="hero__title">Turn school chaos into <span style="background:linear-gradient(135deg,#8aa0ff,#6ee7b7);-webkit-background-clip:text;background-clip:text;color:transparent">one simple schedule</span>.</h1>
+        <p class="hero__desc">Forward school emails or drop screenshots from WhatsApp/portals. Schoolduler auto‑extracts dates and creates a clean family calendar with colour‑coded categories.</p>
+        <div class="hero__cta">
+          <a class="btn btn--brand" href="#waitlist">Reserve my spot</a>
+          <a class="btn" href="#demo">See an example</a>
+        </div>
+      </div>
+      <div class="hero__media">
+        <div class="panel">
+          <!-- Example calendar (scoped, mobile-safe) -->
+          <section id="demo" class="sd-cal">
+            <header class="sd-cal__head">
+              <h3 class="sd-cal__title">September — Family Calendar (example)</h3>
+              <p class="sd-cal__sub">Sample entries from a newsletter + WhatsApp screenshot</p>
+            </header>
+            <div class="sd-cal__dow" aria-hidden="true">
+              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+            </div>
+            <ol class="sd-cal__grid" role="list">
+              <li class="sd-cal__day sd-is-empty" aria-hidden="true"></li>
+              <li class="sd-cal__day sd-is-empty" aria-hidden="true"></li>
+              <li class="sd-cal__day"><span class="sd-cal__date">1</span>
+                <div class="sd-cal__event" data-tag="reminder">Forms deadline — 5pm</div>
+              </li>
+              <li class="sd-cal__day"><span class="sd-cal__date">2</span>
+                <div class="sd-cal__event" data-tag="club">Coding Club starts — 3:30pm</div>
+              </li>
+              <li class="sd-cal__day"><span class="sd-cal__date">3</span>
+                <div class="sd-cal__event" data-tag="homework">Spellings due</div>
+              </li>
+              <li class="sd-cal__day"><span class="sd-cal__date">4</span>
+                <div class="sd-cal__event" data-tag="sports">Football training — 6:30pm</div>
+              </li>
+              <li class="sd-cal__day"><span class="sd-cal__date">5</span>
+                <div class="sd-cal__event" data-tag="trip">Museum trip — 9:00am</div>
+                <div class="sd-cal__event" data-tag="reminder">Packed lunch + water bottle</div>
+              </li>
+              <li class="sd-cal__day"><span class="sd-cal__date">6</span></li>
+              <li class="sd-cal__day"><span class="sd-cal__date">7</span></li>
+            </ol>
+            <div class="sd-cal__legend">
+              <span class="sd-key sd-cat--homework">Homework</span>
+              <span class="sd-key sd-cat--sports">Sports</span>
+              <span class="sd-key sd-cat--trip">Trip</span>
+              <span class="sd-key sd-cat--club">Club</span>
+              <span class="sd-key sd-cat--reminder">Reminder</span>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== Features ====================== -->
+  <section id="how" class="section">
+    <div class="wrap">
+      <div class="features">
+        <article class="card">
           <h3>Forward</h3>
-          <p class="muted">Send school newsletters/emails to your family’s unique address (e.g. <em>smith-family@schoolduler.com</em>).</p>
+          <p>Send school emails or upload screenshots. We parse dates, times, and details automatically.</p>
+        </article>
+        <article class="card">
+          <h3>Organise</h3>
+          <p>Colour‑coded categories (homework, clubs, trips, reminders) with filters per child.</p>
+        </article>
+        <article class="card">
+          <h3>Sync</h3>
+          <p>Subscribe from Google, Apple, or Outlook. Everyone sees the same schedule.</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======================== Waitlist form ================= -->
+  <section id="waitlist" class="section">
+    <div class="wrap">
+      <div class="form stack-24">
+        <div>
+          <h2 style="margin:0 0 6px; font-size:26px;">Join the waitlist</h2>
+          <p class="note">No spam. We’ll only email you about Schoolduler updates.</p>
         </div>
-        <div class="card">
-          <div class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        <form id="waitlist-form" action="https://formspree.io/f/myzdpnkz" method="POST" class="stack-16">
+          <div class="form__row">
+            <label>
+              <span class="hint">Your name</span>
+              <input class="input" type="text" name="name" autocomplete="name" required />
+            </label>
+            <label>
+              <span class="hint">Email</span>
+              <input class="input" type="email" name="email" autocomplete="email" required />
+            </label>
           </div>
-          <h3>We parse</h3>
-          <p class="muted">We extract dates/times from text or PDFs. Smart labels like “Inset Day” or “PE Kit”.</p>
-        </div>
-        <div class="card">
-          <div class="icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="currentColor" stroke-width="2"/><path d="M8 2v4M16 2v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          <div class="form__row">
+            <label>
+              <span class="hint">School / Group (optional)</span>
+              <input class="input" type="text" name="school" />
+            </label>
+            <label>
+              <span class="hint">Role</span>
+              <select class="select" name="role" required>
+                <option value="" selected disabled>Choose one…</option>
+                <option>Parent</option>
+                <option>Teacher</option>
+                <option>Admin / PTA</option>
+                <option>Other</option>
+              </select>
+            </label>
           </div>
-          <h3>It appears</h3>
-          <p class="muted">Events sync to your normal calendar. Optional night-before reminders & weekly digests.</p>
-        </div>
+          <div class="form__row form__row--full">
+            <label>
+              <span class="hint">Anything else? (optional)</span>
+              <textarea class="textarea" name="message" placeholder="What’s your scheduling headache?"></textarea>
+            </label>
+          </div>
+          <!-- Honeypot -->
+          <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
+          <div class="form__actions">
+            <button class="btn btn--brand" type="submit">Request early access</button>
+            <span id="form-status" class="hint" role="status" aria-live="polite"></span>
+          </div>
+        </form>
       </div>
-    </section>
+    </div>
+  </section>
 
-<section class="sd-cal">
-  <header class="sd-cal__head">
-    <h3 class="sd-cal__title">September — Schoolduler Family Calendar</h3>
-    <p class="sd-cal__sub">Example mock data</p>
-  </header>
-
-  <div class="sd-cal__dow" aria-hidden="true">
-    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-  </div>
-
-  <ol class="sd-cal__grid" role="list">
-    <li class="sd-cal__day sd-is-empty" aria-hidden="true"></li>
-    <li class="sd-cal__day sd-is-empty" aria-hidden="true"></li>
-    <li class="sd-cal__day">
-      <span class="sd-cal__date">1</span>
-      <div class="sd-cal__event sd-is-subtle">Auto-added Reminder</div>
-    </li>
-    <li class="sd-cal__day">
-      <span class="sd-cal__date">2</span>
-      <div class="sd-cal__event">Non-Uniform Day</div>
-    </li>
-    <li class="sd-cal__day"><span class="sd-cal__date">3</span></li>
-    <li class="sd-cal__day">
-      <span class="sd-cal__date">4</span>
-      <div class="sd-cal__event sd-is-subtle">PE Kit — 8 pm</div>
-    </li>
-    <li class="sd-cal__day">
-      <span class="sd-cal__date">5</span>
-      <div class="sd-cal__event">Class Assembly · 2:00 pm</div>
-    </li>
-    <li class="sd-cal__day"><span class="sd-cal__date">6</span></li>
-    <li class="sd-cal__day"><span class="sd-cal__date">7</span></li>
-    <!-- …continue as needed… -->
-  </ol>
-</section>
-
-
-
-    <section class="pricing" id="pricing" aria-label="Pricing">
-      <div class="grid">
-        <div class="card">
-          <h3>Free</h3>
-          <p><span class="price">£0</span> / forever</p>
-          <ul class="clean">
-            <li><span class="tick">✓</span> 1 school / child</li>
-            <li><span class="tick">✓</span> Email → calendar parsing</li>
-            <li><span class="tick">✓</span> Basic event categories</li>
-          </ul>
-      <!--    <a class="btn btn-outline" href="#signup">Start free</a> -->
-        </div>
-        <div class="card">
-          <h3>Plus</h3>
-          <p><span class="price">£5</span> / month <span class="muted">or</span> <span class="strike">£60</span> <strong>£50</strong> / year</p>
-          <ul class="clean">
-            <li><span class="tick">✓</span> Multiple schools / children</li>
-            <li><span class="tick">✓</span> WhatsApp screenshots</li>
-            <li><span class="tick">✓</span> Night-before reminders</li>
-            <li><span class="tick">✓</span> Weekly email digest</li>
-            <li><span class="tick">✓</span> Priority parsing & support</li>
-          </ul>
-      <!--    <a class="btn" href="#signup">Join the beta</a> -->
-        </div>
-      </div>
-    </section>
-
-    <section id="signup" class="wrap" aria-label="Signup">
-      <div class="card" style="max-width:760px; margin: 0 auto;">
-
-
-<form action="https://formspree.io/f/myzdpnkz" method="POST" class="schoolduler-form" id="schooldulerForm">
-  <h2>Stay in the Loop</h2>
-  <p class="lead">Sign up to get early access and updates from Schoolduler.</p>
-
-  <div class="field">
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name" placeholder="Your name" required>
-  </div>
-
-  <div class="field">
-    <label for="email">Email</label>
-    <input type="email" id="email" name="_replyto" placeholder="your@email.com" required>
-  </div>
-
-  <div class="field">
-    <label for="message">Message (optional)</label>
-    <textarea id="message" name="message" placeholder="Tell us what you'd love to see..."></textarea>
-  </div>
-
-  <input type="hidden" name="_subject" value="New Schoolduler Landing Page Lead">
-
-  <button type="submit" id="sdSubmitBtn">Notify Me</button>
-
-  <!-- Message placeholder -->
-  <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
-</form>
-
-
-        
-        <p class="foot">Privacy-first. We never sell or share your data.</p>
-      </div>
-    </section>
-  </main>
-
-  <footer class="wrap footer">
-    <div>“Schoolduler — the school scheduler for busy parents.” • <a href="#top">Back to top</a></div>
-    <div style="margin-top:6px">Built by parents, for parents.</div>
+  <!-- ======================== Footer ======================== -->
+  <footer class="ftr">
+    <div class="wrap">© <span id="y"></span> Schoolduler — Built by parents, for parents.</div>
   </footer>
 
   <script>
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(a=>{
-      a.addEventListener('click', e=>{
-        const id = a.getAttribute('href').slice(1);
-        const el = document.getElementById(id);
-        if(!el) return;
+    // Dynamic year
+    document.getElementById('y').textContent = new Date().getFullYear();
+
+    // Progressive enhancement: AJAX submit to Formspree for inline confirmation
+    (function(){
+      const form = document.getElementById('waitlist-form');
+      const status = document.getElementById('form-status');
+      if (!form) return;
+      form.addEventListener('submit', async function(e){
+        // If fetch not available, allow normal POST
+        if (!window.fetch) return;
         e.preventDefault();
-        el.scrollIntoView({behavior:'smooth', block:'start'});
-        history.pushState(null, '', '#'+id);
+        status.textContent = 'Sending…';
+        const data = new FormData(form);
+        try {
+          const res = await fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } });
+          if (res.ok) {
+            form.reset();
+            status.textContent = 'Thanks! You are on the list.';
+          } else {
+            status.textContent = 'Something went wrong. Please try again.';
+          }
+        } catch(err){
+          status.textContent = 'Network error. Please try again.';
+        }
       });
-    });
+    })();
   </script>
-
-  <script>
-  const form = document.getElementById("schooldulerForm");
-  const status = document.getElementById("formStatus");
-  const btn = document.getElementById("sdSubmitBtn");
-
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    status.textContent = "";
-    status.className = "form-status";
-    btn.disabled = true;
-
-    try {
-      const response = await fetch(form.action, {
-        method: form.method,
-        body: new FormData(form),
-        headers: { Accept: "application/json" }
-      });
-
-      if (response.ok) {
-        status.textContent = "✅ Thanks, we’ll be in touch soon!";
-        status.classList.add("success");
-        form.reset();
-      } else {
-        const result = await response.json().catch(() => ({}));
-        status.textContent = result.error || "⚠️ Oops! Something went wrong.";
-        status.classList.add("error");
-      }
-    } catch {
-      status.textContent = "⚠️ Network error. Please try again.";
-      status.classList.add("error");
-    } finally {
-      btn.disabled = false;
-    }
-  });
-</script>
-
-
-  
 </body>
 </html>
