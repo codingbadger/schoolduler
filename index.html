@@ -427,79 +427,134 @@ nav[role="navigation"] {
 
 
 
-    /* ----- Calendar mock container ----- */
-.calendar-mock{
-  border:1px solid #eee; border-radius:16px; background:#fff;
-  padding:16px; max-width:900px; margin:32px auto; overflow:hidden;
-}
-.calendar-mock * { min-width:0; box-sizing:border-box; }
+/* ===== Schoolduler calendar (scoped) ===== */
+.sd-cal {
+  --sd-gap: 8px;
+  --sd-radius: 14px;
+  --sd-border: #e9eaee;
+  --sd-txt: #111827;
+  --sd-subtxt: #6b7280;
+  --sd-tile: #ffffff;
+  --sd-event-bg: #f8fafc;
 
-/* Header */
-.calendar-mock .cal-head h3{
-  margin:0 0 4px; font-size:clamp(18px,2.6vw,22px); line-height:1.2;
-}
-.calendar-mock .cal-head .sub{
-  margin:0 0 12px; font-size:14px; opacity:.75;
-}
-
-/* Days of week row */
-.calendar-mock .cal-dow{
-  display:grid; grid-template-columns:repeat(7,minmax(0,1fr));
-  gap:8px; font-size:12px; text-transform:uppercase; letter-spacing:.02em;
-  opacity:.7; margin-bottom:8px; padding:0 2px;
-}
-.calendar-mock .cal-dow span{ text-align:center; }
-
-/* Month grid */
-.calendar-mock .cal-grid{
-  display:grid; grid-template-columns:repeat(7,minmax(0,1fr));
-  gap:8px; list-style:none; padding:0; margin:0;
-}
-.calendar-mock .day{
-  border:1px solid #eee; border-radius:12px; padding:10px; position:relative;
-  display:flex; flex-direction:column; gap:6px; min-height:84px; /* keeps tiles even */
-}
-.calendar-mock .day.is-empty{ background:linear-gradient(180deg,#fafafa,transparent); }
-
-/* Date number */
-.calendar-mock .date{
-  font-weight:600; font-size:14px; line-height:1; color:#333;
+  max-width: 960px;
+  margin: 32px auto;
+  padding: 16px;
+  border: 1px solid var(--sd-border);
+  border-radius: var(--sd-radius);
+  background: var(--sd-tile);
+  overflow: hidden;
 }
 
-/* Events */
-.calendar-mock .event{
-  font-size:13px; line-height:1.25; padding:6px 8px; border-radius:8px;
-  border:1px solid #eaeaea; background:#f9fafb;
-  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+.sd-cal * { box-sizing: border-box; min-width: 0; }
+
+.sd-cal__head { margin-bottom: 12px; }
+.sd-cal__title {
+  margin: 0 0 4px;
+  font-size: clamp(18px, 2.4vw, 22px);
+  line-height: 1.25;
+  color: var(--sd-txt);
 }
-.calendar-mock .event.subtle{ background:#fcfcfd; border-style:dashed; }
+.sd-cal__sub {
+  margin: 0;
+  font-size: 14px;
+  color: var(--sd-subtxt);
+}
 
-/* Prevent horizontal scroll on small screens */
-html, body { overflow-x:hidden; }
+.sd-cal__dow {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--sd-gap);
+  font-size: 12px;
+  letter-spacing: .02em;
+  text-transform: uppercase;
+  color: var(--sd-subtxt);
+  margin-bottom: var(--sd-gap);
+  padding: 0 2px;
+  text-align: center;
+}
 
-/* ----- Mobile behaviour ----- */
-@media (max-width:640px){
-  .calendar-mock{ padding:12px; border-radius:14px; }
-  .calendar-mock .cal-dow{ display:none; } /* hide tiny weekday row on phones */
+.sd-cal__grid {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--sd-gap);
+}
 
-  /* Switch to agenda list for readability */
-  .calendar-mock .cal-grid{
-    grid-template-columns:1fr; gap:10px;
+.sd-cal__day {
+  border: 1px solid var(--sd-border);
+  border-radius: var(--sd-radius);
+  padding: 10px;
+  background: var(--sd-tile);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 84px;
+}
+
+.sd-cal__day.sd-is-empty {
+  background: linear-gradient(180deg, #fafafa, #fff);
+}
+
+.sd-cal__date {
+  font: 600 14px/1 system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: var(--sd-txt);
+}
+
+.sd-cal__event {
+  font-size: 13px;
+  line-height: 1.25;
+  padding: 6px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--sd-border);
+  background: var(--sd-event-bg);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;      /* prevent tall tiles */
+  -webkit-box-orient: vertical;
+}
+
+.sd-cal__event.sd-is-subtle {
+  border-style: dashed;
+}
+
+/* ---- Mobile: switch to agenda for readability ---- */
+@media (max-width: 640px) {
+  .sd-cal { padding: 12px; border-radius: 12px; }
+  .sd-cal__dow { display: none; }
+
+  .sd-cal__grid {
+    grid-template-columns: 1fr; /* single column list */
+    gap: 10px;
   }
-  .calendar-mock .day{
-    min-height:unset; padding:12px 12px 12px 48px; /* room for large date badge */
+
+  .sd-cal__day {
+    min-height: unset;
+    padding: 12px 12px 12px 52px; /* room for date badge */
+    position: relative;
   }
-  .calendar-mock .date{
-    position:absolute; left:12px; top:12px; width:28px; height:28px;
-    display:flex; align-items:center; justify-content:center;
-    background:#f2f5ff; border:1px solid #e3e8ff; border-radius:8px; font-size:13px;
+
+  .sd-cal__date {
+    position: absolute;
+    left: 12px; top: 12px;
+    width: 30px; height: 30px;
+    display: inline-flex;
+    align-items: center; justify-content: center;
+    border: 1px solid #e3e8ff;
+    background: #f3f5ff;
+    border-radius: 10px;
+    font-size: 13px;
   }
+
+  .sd-cal__event { -webkit-line-clamp: 3; }
 }
 
-/* ----- Tablet tweaks ----- */
-@media (min-width:641px) and (max-width:900px){
-  .calendar-mock .day{ min-height:72px; padding:8px; }
-  .calendar-mock .event{ font-size:12px; }
+/* ---- Tablet: slightly tighter tiles ---- */
+@media (min-width: 641px) and (max-width: 900px) {
+  .sd-cal__day { min-height: 72px; padding: 8px; }
+  .sd-cal__event { font-size: 12px; }
 }
 
 
@@ -572,39 +627,42 @@ html, body { overflow-x:hidden; }
       </div>
     </section>
 
-    <section class="calendar-mock">
-  <header class="cal-head">
-    <h3>September — Schoolduler Family Calendar</h3>
-    <p class="sub">Example: all events pulled from one forwarded newsletter + one WhatsApp screenshot.</p>
+<section class="sd-cal">
+  <header class="sd-cal__head">
+    <h3 class="sd-cal__title">September — Schoolduler Family Calendar</h3>
+    <p class="sd-cal__sub">Example mock data</p>
   </header>
 
-  <!-- Days of week -->
-  <div class="cal-dow" aria-hidden="true">
+  <div class="sd-cal__dow" aria-hidden="true">
     <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
   </div>
 
-  <!-- Month grid: add empty cells before 1st if month starts mid-week -->
-  <ol class="cal-grid" role="list">
-    <li class="day is-empty" aria-hidden="true"></li>
-    <li class="day is-empty" aria-hidden="true"></li>
-    <li class="day"><span class="date">1</span>
-      <div class="event subtle">Auto-added Reminder</div>
+  <ol class="sd-cal__grid" role="list">
+    <li class="sd-cal__day sd-is-empty" aria-hidden="true"></li>
+    <li class="sd-cal__day sd-is-empty" aria-hidden="true"></li>
+    <li class="sd-cal__day">
+      <span class="sd-cal__date">1</span>
+      <div class="sd-cal__event sd-is-subtle">Auto-added Reminder</div>
     </li>
-    <li class="day"><span class="date">2</span>
-      <div class="event">Non-Uniform Day</div>
+    <li class="sd-cal__day">
+      <span class="sd-cal__date">2</span>
+      <div class="sd-cal__event">Non-Uniform Day</div>
     </li>
-    <li class="day"><span class="date">3</span></li>
-    <li class="day"><span class="date">4</span>
-      <div class="event subtle">PE Kit — reminder 8 pm</div>
+    <li class="sd-cal__day"><span class="sd-cal__date">3</span></li>
+    <li class="sd-cal__day">
+      <span class="sd-cal__date">4</span>
+      <div class="sd-cal__event sd-is-subtle">PE Kit — 8 pm</div>
     </li>
-    <li class="day"><span class="date">5</span>
-      <div class="event">Class Assembly · 2:00 pm</div>
+    <li class="sd-cal__day">
+      <span class="sd-cal__date">5</span>
+      <div class="sd-cal__event">Class Assembly · 2:00 pm</div>
     </li>
-    <li class="day"><span class="date">6</span></li>
-    <li class="day"><span class="date">7</span></li>
-    <!-- …continue the month as needed… -->
+    <li class="sd-cal__day"><span class="sd-cal__date">6</span></li>
+    <li class="sd-cal__day"><span class="sd-cal__date">7</span></li>
+    <!-- …continue as needed… -->
   </ol>
 </section>
+
 
 
     <section class="pricing" id="pricing" aria-label="Pricing">
