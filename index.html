@@ -4,343 +4,154 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Schoolduler — Tame the School Chaos</title>
-  <meta name="description" content="Forward school emails, screenshots, and notices into one clean family calendar. Schoolduler turns chaos into clarity." />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    /* ==========================================================
-       Base reset (scoped to this page only)
-    ========================================================== */
-    :root {
-      --bg: #0b0f16;          /* dark background for contrast */
-      --panel: #0f1520;       /* cards */
-      --ink: #e6eaf2;         /* primary text */
-      --muted: #a7b0c0;       /* secondary text */
-      --brand: #8aa0ff;       /* accent */
-      --brand-2: #6ee7b7;     /* secondary accent */
-      --border: #1f2532;      /* subtle borders */
-      --shadow: 0 10px 30px rgba(0,0,0,.25);
-      --radius: 16px;
-      --maxw: 1120px;
-    }
+    body { margin:0; font-family:Inter, sans-serif; background:#0b0f16; color:#e6eaf2; }
+    .wrap{max-width:1100px;margin:auto;padding:0 20px;}
+    header{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid #1f2532;}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;}
+    .brand img{height:32px;width:auto;}
+    nav a{margin-left:12px;padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:600;}
+    .btn-brand{background:linear-gradient(135deg,#8aa0ff,#6ee7b7);color:#0b0f16;}
+    .btn-ghost{border:1px solid #1f2532;color:#e6eaf2;}
 
-    html, body { height: 100%; }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--ink);
-      background: radial-gradient(1200px 800px at 10% -10%, rgba(138,160,255,.15), transparent 60%),
-                  radial-gradient(900px 600px at 100% 0%, rgba(110,231,183,.10), transparent 50%),
-                  var(--bg);
-    }
-    a { color: inherit; text-decoration: none; }
-    img { max-width: 100%; display: block; height: auto; }
+    .hero{padding:60px 0;}
+    .hero__grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+    .hero h1{font-size:clamp(28px,6vw,56px);line-height:1.1;margin:0 0 16px;}
+    .hero p{color:#a7b0c0;font-size:18px;}
+    .hero__cta{margin-top:20px;display:flex;gap:12px;flex-wrap:wrap;}
 
-    /* ==========================================================
-       Layout helpers
-    ========================================================== */
-    .wrap { max-width: var(--maxw); margin-inline: auto; padding-inline: 20px; }
-    .stack-16 > * + * { margin-top: 16px; }
-    .stack-24 > * + * { margin-top: 24px; }
-    .stack-32 > * + * { margin-top: 32px; }
+    .panel{background:#0f1520;padding:20px;border-radius:16px;border:1px solid #1f2532;}
 
-    /* ==========================================================
-       Header
-    ========================================================== */
-    .hdr { position: sticky; top: 0; z-index: 50; backdrop-filter: saturate(1.2) blur(6px); background: color-mix(in srgb, var(--bg) 80%, transparent); border-bottom: 1px solid var(--border); }
-    .hdr__inner { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 20px; }
-    .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 700; letter-spacing: .2px; }
-    .brand__logo { width: 28px; height: 28px; border-radius: 8px; background: linear-gradient(135deg, var(--brand), #b9c4ff); box-shadow: inset 0 0 0 2px rgba(255,255,255,.15); }
-    .brand__name { font-size: 18px; }
+    .sd-cal{margin-top:10px;}
+    .sd-cal__head h3{margin:0 0 4px;font-size:18px;}
+    .sd-cal__sub{margin:0 0 12px;font-size:14px;color:#a7b0c0;}
+    .sd-cal__dow{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:12px;color:#a7b0c0;margin-bottom:8px;}
+    .sd-cal__grid{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+    .sd-cal__day{background:#0e1423;border:1px solid #1f2532;border-radius:10px;padding:6px;min-height:70px;display:flex;flex-direction:column;gap:4px;}
+    .sd-cal__date{font-size:12px;font-weight:700;color:#a7b0c0;}
+    .sd-cal__event{font-size:13px;padding:4px 6px;border-radius:6px;}
+    .sd-cal__event[data-tag="homework"]{background:rgba(96,165,250,.15);border-left:4px solid #60a5fa;}
+    .sd-cal__event[data-tag="sports"]{background:rgba(52,211,153,.15);border-left:4px solid #34d399;}
+    .sd-cal__event[data-tag="trip"]{background:rgba(251,191,36,.15);border-left:4px solid #fbbf24;}
+    .sd-cal__event[data-tag="club"]{background:rgba(167,139,250,.15);border-left:4px solid #a78bfa;}
+    .sd-cal__event[data-tag="reminder"]{background:rgba(248,113,113,.15);border-left:4px solid #f87171;}
+    .sd-cal__legend{display:flex;flex-wrap:wrap;gap:10px;margin-top:8px;font-size:13px;color:#a7b0c0;}
+    .sd-key{display:flex;align-items:center;gap:6px;}
+    .sd-key::before{content:"";width:10px;height:10px;border-radius:50%;background:currentColor;}
+    .sd-cat--homework{color:#60a5fa;}
+    .sd-cat--sports{color:#34d399;}
+    .sd-cat--trip{color:#fbbf24;}
+    .sd-cat--club{color:#a78bfa;}
+    .sd-cat--reminder{color:#f87171;}
 
-    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 16px; border-radius: 999px; border: 1px solid var(--border); background: #151b29; color: var(--ink); box-shadow: var(--shadow); font-weight: 600; }
-    .btn--ghost { background: transparent; box-shadow: none; }
-    .btn--brand { background: linear-gradient(135deg, var(--brand), #a8b6ff); color: #0b0f16; border-color: transparent; }
+    @media(max-width:900px){.hero__grid{grid-template-columns:1fr;}}
+    @media(max-width:640px){.sd-cal__dow{display:none;}.sd-cal__grid{grid-template-columns:1fr;}.sd-cal__day{display:grid;grid-template-columns:40px 1fr;gap:8px;}.sd-cal__date{display:flex;align-items:center;justify-content:center;background:#0b1220;border:1px solid #253047;border-radius:6px;width:32px;height:32px;}}
 
-    /* ==========================================================
-       Hero — fixed alignment & responsive type
-    ========================================================== */
-    .hero { padding: 56px 0 24px; }
-    .hero__grid { display: grid; grid-template-columns: 1.1fr .9fr; gap: 32px; align-items: center; }
-    .eyebrow { color: var(--brand-2); font-weight: 700; letter-spacing: .16em; text-transform: uppercase; font-size: 12px; }
-    .hero__title { margin: 8px 0 12px; font-size: clamp(28px, 6vw, 54px); line-height: 1.05; letter-spacing: -0.02em; }
-    .hero__desc { color: var(--muted); font-size: clamp(16px, 2.6vw, 18px); max-width: 58ch; }
-    .hero__cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 14px; }
+    .section{padding:40px 0;}
+    .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;}
+    .card{background:#0f1520;padding:18px;border-radius:12px;border:1px solid #1f2532;}
+    .card h3{margin:0 0 6px;}
 
-    .panel { background: #0d1320; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+    .form{background:#0f1520;padding:20px;border-radius:16px;border:1px solid #1f2532;}
+    .form__row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .form__row--full{grid-template-columns:1fr;}
+    input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #243048;background:#0b1220;color:#e6eaf2;}
+    textarea{min-height:100px;}
+    .form__actions{margin-top:12px;}
 
-    @media (max-width: 900px) {
-      .hero { padding: 40px 0 16px; }
-      .hero__grid { grid-template-columns: 1fr; }
-      .hero__media { order: -1; }
-    }
-
-    /* ==========================================================
-       Calendar (namespaced: sd-*)
-    ========================================================== */
-    .sd-cal { --sd-gap: 8px; --sd-radius: 14px; --sd-border: #1f2532; --sd-text: var(--ink); --sd-sub: var(--muted); --sd-tile: #0b0f16; --sd-event-bg: #0e1423; --sd-shadow: 0 6px 20px rgba(0,0,0,.25); margin-top: 6px; }
-    .sd-cal__head { margin-bottom: 10px; }
-    .sd-cal__title { margin: 0 0 6px; font-size: 18px; color: var(--ink); }
-    .sd-cal__sub { margin: 0; color: var(--muted); font-size: 13px; }
-
-    .sd-cal__dow { display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: var(--sd-gap); font-size: 12px; color: var(--sd-sub); text-transform: uppercase; letter-spacing: .02em; margin: 10px 0 8px; text-align: center; }
-
-    .sd-cal__grid { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(7,minmax(0,1fr)); gap: var(--sd-gap); }
-    .sd-cal__day { border: 1px solid var(--sd-border); border-radius: var(--sd-radius); background: var(--sd-event-bg); padding: 10px; display: flex; flex-direction: column; gap: 6px; min-height: 84px; box-shadow: var(--sd-shadow); }
-    .sd-cal__day.sd-is-empty { background: linear-gradient(180deg,#0d1320,transparent); }
-    .sd-cal__date { font-weight: 700; font-size: 13px; color: var(--sd-sub); }
-
-    /* Category palette */
-    .sd-cal { --sd-col-homework:#60a5fa; --sd-col-sports:#34d399; --sd-col-trip:#fbbf24; --sd-col-club:#a78bfa; --sd-col-reminder:#f87171; }
-
-    .sd-cal__event { display: block; padding: 8px 10px; border-radius: 10px; border: 1px solid var(--sd-border); background: #0f1626; color: var(--sd-text); line-height: 1.3; word-break: break-word; overflow-wrap: anywhere; }
-    .sd-cal__event::before { content:""; display:inline-block; width:8px; height:8px; border-radius: 999px; margin-right: 8px; transform: translateY(-1px); background: var(--sd-col-homework); }
-    .sd-cal__event[data-tag="homework"]::before, .sd-cal__event.sd-cat--homework::before { background: var(--sd-col-homework); }
-    .sd-cal__event[data-tag="sports"]::before,   .sd-cal__event.sd-cat--sports::before   { background: var(--sd-col-sports); }
-    .sd-cal__event[data-tag="trip"]::before,     .sd-cal__event.sd-cat--trip::before     { background: var(--sd-col-trip); }
-    .sd-cal__event[data-tag="club"]::before,     .sd-cal__event.sd-cat--club::before     { background: var(--sd-col-club); }
-    .sd-cal__event[data-tag="reminder"]::before, .sd-cal__event.sd-cat--reminder::before { background: var(--sd-col-reminder); }
-
-    /* Soft tinted backgrounds + left accents */
-    .sd-cal__event { position: relative; border-left: 6px solid var(--sd-col-homework); background: rgba(96,165,250,.10); border-color: rgba(96,165,250,.35); }
-    .sd-cal__event[data-tag="sports"], .sd-cal__event.sd-cat--sports { border-left-color: var(--sd-col-sports); background: rgba(52,211,153,.10); border-color: rgba(52,211,153,.35); }
-    .sd-cal__event[data-tag="trip"], .sd-cal__event.sd-cat--trip { border-left-color: var(--sd-col-trip); background: rgba(251,191,36,.10); border-color: rgba(251,191,36,.35); }
-    .sd-cal__event[data-tag="club"], .sd-cal__event.sd-cat--club { border-left-color: var(--sd-col-club); background: rgba(167,139,250,.10); border-color: rgba(167,139,250,.35); }
-    .sd-cal__event[data-tag="reminder"], .sd-cal__event.sd-cat--reminder { border-left-color: var(--sd-col-reminder); background: rgba(248,113,113,.10); border-color: rgba(248,113,113,.35); }
-
-    /* Mobile layout fix: 2-column agenda for readability */
-    @media (max-width: 640px) {
-      .sd-cal__dow { display: none; }
-      .sd-cal__grid { grid-template-columns: 1fr; gap: 10px; }
-      .sd-cal__day { display: grid; grid-template-columns: 44px 1fr; gap: 12px; padding: 12px; min-height: unset; }
-      .sd-cal__date { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: 1px solid #253047; background: #0b1220; color: #c6d0e0; font-weight: 700; }
-      .sd-cal__day > *:not(.sd-cal__date) { grid-column: 2; }
-      .sd-cal__event { -webkit-line-clamp: unset; overflow: visible; }
-    }
-
-    /* Legend */
-    .sd-cal__legend { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-top: 12px; color: var(--muted); font-size: 13px; }
-    .sd-key { display: inline-flex; align-items: center; gap: 8px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; background: #0d1320; }
-    .sd-key::before { content:""; width: 10px; height: 10px; border-radius: 999px; background: #fff; }
-    .sd-key.sd-cat--homework::before { background: var(--sd-col-homework); }
-    .sd-key.sd-cat--sports::before   { background: var(--sd-col-sports); }
-    .sd-key.sd-cat--trip::before     { background: var(--sd-col-trip); }
-    .sd-key.sd-cat--club::before     { background: var(--sd-col-club); }
-    .sd-key.sd-cat--reminder::before { background: var(--sd-col-reminder); }
-
-    /* ==========================================================
-       Feature cards & sections
-    ========================================================== */
-    .section { padding: 40px 0; }
-    .features { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px; }
-    .card { background: #0d1320; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
-    .card h3 { margin: 0 0 6px; font-size: 18px; }
-    .card p { margin: 0; color: var(--muted); }
-
-    @media (max-width: 900px) { .features { grid-template-columns: 1fr 1fr; } }
-    @media (max-width: 640px) { .features { grid-template-columns: 1fr; } }
-
-    /* ==========================================================
-       Waitlist form (Formspree: myzdpnkz)
-    ========================================================== */
-    .form { background: #0d1320; border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
-    .form__row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .form__row--full { grid-template-columns: 1fr; }
-    .input, .select, .textarea { width: 100%; padding: 12px 14px; border: 1px solid #243048; border-radius: 12px; background: #0b1220; color: var(--ink); font: inherit; }
-    .textarea { min-height: 110px; resize: vertical; }
-    .form__actions { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-    .hint { color: var(--muted); font-size: 13px; }
-
-    @media (max-width: 640px) { .form__row { grid-template-columns: 1fr; } }
-
-    .note { color: var(--muted); font-size: 13px; }
-
-    /* ==========================================================
-       Footer
-    ========================================================== */
-    .ftr { padding: 36px 0; color: var(--muted); text-align: center; border-top: 1px solid var(--border); }
+    footer{padding:20px 0;border-top:1px solid #1f2532;color:#a7b0c0;text-align:center;}
   </style>
 </head>
 <body>
-  <!-- ======================== Header ======================== -->
-  <header class="hdr">
-    <div class="hdr__inner wrap">
-      <a href="#" class="brand" aria-label="Schoolduler home">
-        <span class="brand__logo" aria-hidden="true"></span>
-        <span class="brand__name">Schoolduler</span>
-      </a>
-      <nav>
-        <a class="btn btn--ghost" href="#how">How it works</a>
-        <a class="btn btn--brand" href="#waitlist">Join the waitlist</a>
-      </nav>
+  <header class="wrap">
+    <div class="brand">
+      <img src="/assets/logo.svg" alt="Schoolduler logo" />
+      Schoolduler
     </div>
+    <nav>
+      <a href="#how" class="btn-ghost">How it works</a>
+      <a href="#waitlist" class="btn-brand">Join the waitlist</a>
+    </nav>
   </header>
 
-  <!-- ======================== Hero ========================== -->
   <section class="hero">
     <div class="wrap hero__grid">
       <div>
-        <div class="eyebrow">Built by parents</div>
-        <h1 class="hero__title">Turn school chaos into <span style="background:linear-gradient(135deg,#8aa0ff,#6ee7b7);-webkit-background-clip:text;background-clip:text;color:transparent">one simple schedule</span>.</h1>
-        <p class="hero__desc">Forward school emails or drop screenshots from WhatsApp/portals. Schoolduler auto‑extracts dates and creates a clean family calendar with colour‑coded categories.</p>
+        <h1>Turn school chaos into <span style="background:linear-gradient(135deg,#8aa0ff,#6ee7b7);-webkit-background-clip:text;color:transparent">one simple schedule</span>.</h1>
+        <p>Forward school emails or screenshots. Schoolduler extracts dates and builds a clear family calendar.</p>
         <div class="hero__cta">
-          <a class="btn btn--brand" href="#waitlist">Reserve my spot</a>
-          <a class="btn" href="#demo">See an example</a>
+          <a href="#waitlist" class="btn-brand">Reserve my spot</a>
+          <a href="#demo" class="btn-ghost">See an example</a>
         </div>
       </div>
-      <div class="hero__media">
-        <div class="panel">
-          <!-- Example calendar (scoped, mobile-safe) -->
-          <section id="demo" class="sd-cal">
-            <header class="sd-cal__head">
-              <h3 class="sd-cal__title">September — Family Calendar (example)</h3>
-              <p class="sd-cal__sub">Sample entries from a newsletter + WhatsApp screenshot</p>
-            </header>
-            <div class="sd-cal__dow" aria-hidden="true">
-              <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
-            </div>
-            <ol class="sd-cal__grid" role="list">
-              <li class="sd-cal__day sd-is-empty" aria-hidden="true"></li>
-              <li class="sd-cal__day sd-is-empty" aria-hidden="true"></li>
-              <li class="sd-cal__day"><span class="sd-cal__date">1</span>
-                <div class="sd-cal__event" data-tag="reminder">Forms deadline — 5pm</div>
-              </li>
-              <li class="sd-cal__day"><span class="sd-cal__date">2</span>
-                <div class="sd-cal__event" data-tag="club">Coding Club starts — 3:30pm</div>
-              </li>
-              <li class="sd-cal__day"><span class="sd-cal__date">3</span>
-                <div class="sd-cal__event" data-tag="homework">Spellings due</div>
-              </li>
-              <li class="sd-cal__day"><span class="sd-cal__date">4</span>
-                <div class="sd-cal__event" data-tag="sports">Football training — 6:30pm</div>
-              </li>
-              <li class="sd-cal__day"><span class="sd-cal__date">5</span>
-                <div class="sd-cal__event" data-tag="trip">Museum trip — 9:00am</div>
-                <div class="sd-cal__event" data-tag="reminder">Packed lunch + water bottle</div>
-              </li>
-              <li class="sd-cal__day"><span class="sd-cal__date">6</span></li>
-              <li class="sd-cal__day"><span class="sd-cal__date">7</span></li>
-            </ol>
-            <div class="sd-cal__legend">
-              <span class="sd-key sd-cat--homework">Homework</span>
-              <span class="sd-key sd-cat--sports">Sports</span>
-              <span class="sd-key sd-cat--trip">Trip</span>
-              <span class="sd-key sd-cat--club">Club</span>
-              <span class="sd-key sd-cat--reminder">Reminder</span>
-            </div>
-          </section>
-        </div>
+      <div class="panel">
+        <section id="demo" class="sd-cal">
+          <header class="sd-cal__head">
+            <h3>September — Family Calendar (example)</h3>
+            <p class="sd-cal__sub">Sample entries</p>
+          </header>
+          <div class="sd-cal__dow"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+          <ol class="sd-cal__grid">
+            <li class="sd-cal__day"><span class="sd-cal__date">1</span><div class="sd-cal__event" data-tag="reminder">Forms deadline</div></li>
+            <li class="sd-cal__day"><span class="sd-cal__date">2</span><div class="sd-cal__event" data-tag="club">Coding Club 3:30pm</div></li>
+            <li class="sd-cal__day"><span class="sd-cal__date">3</span><div class="sd-cal__event" data-tag="homework">Spellings due</div></li>
+            <li class="sd-cal__day"><span class="sd-cal__date">4</span><div class="sd-cal__event" data-tag="sports">Football training</div></li>
+            <li class="sd-cal__day"><span class="sd-cal__date">5</span><div class="sd-cal__event" data-tag="trip">Museum trip</div><div class="sd-cal__event" data-tag="reminder">Packed lunch</div></li>
+          </ol>
+          <div class="sd-cal__legend">
+            <span class="sd-key sd-cat--homework">Homework</span>
+            <span class="sd-key sd-cat--sports">Sports</span>
+            <span class="sd-key sd-cat--trip">Trip</span>
+            <span class="sd-key sd-cat--club">Club</span>
+            <span class="sd-key sd-cat--reminder">Reminder</span>
+          </div>
+        </section>
       </div>
     </div>
   </section>
 
-  <!-- ======================== Features ====================== -->
   <section id="how" class="section">
-    <div class="wrap">
-      <div class="features">
-        <article class="card">
-          <h3>Forward</h3>
-          <p>Send school emails or upload screenshots. We parse dates, times, and details automatically.</p>
-        </article>
-        <article class="card">
-          <h3>Organise</h3>
-          <p>Colour‑coded categories (homework, clubs, trips, reminders) with filters per child.</p>
-        </article>
-        <article class="card">
-          <h3>Sync</h3>
-          <p>Subscribe from Google, Apple, or Outlook. Everyone sees the same schedule.</p>
-        </article>
-      </div>
+    <div class="wrap features">
+      <div class="card"><h3>Forward</h3><p>Send emails or screenshots. Dates and details are parsed.</p></div>
+      <div class="card"><h3>Organise</h3><p>Colour‑coded categories with filters per child.</p></div>
+      <div class="card"><h3>Sync</h3><p>Subscribe from Google, Apple, or Outlook.</p></div>
     </div>
   </section>
 
-  <!-- ======================== Waitlist form ================= -->
   <section id="waitlist" class="section">
-    <div class="wrap">
-      <div class="form stack-24">
-        <div>
-          <h2 style="margin:0 0 6px; font-size:26px;">Join the waitlist</h2>
-          <p class="note">No spam. We’ll only email you about Schoolduler updates.</p>
+    <div class="wrap form">
+      <h2>Join the waitlist</h2>
+      <form action="https://formspree.io/f/myzdpnkz" method="POST" class="stack-16">
+        <div class="form__row">
+          <input type="text" name="name" placeholder="Your name" required>
+          <input type="email" name="email" placeholder="Email" required>
         </div>
-        <form id="waitlist-form" action="https://formspree.io/f/myzdpnkz" method="POST" class="stack-16">
-          <div class="form__row">
-            <label>
-              <span class="hint">Your name</span>
-              <input class="input" type="text" name="name" autocomplete="name" required />
-            </label>
-            <label>
-              <span class="hint">Email</span>
-              <input class="input" type="email" name="email" autocomplete="email" required />
-            </label>
-          </div>
-          <div class="form__row">
-            <label>
-              <span class="hint">School / Group (optional)</span>
-              <input class="input" type="text" name="school" />
-            </label>
-            <label>
-              <span class="hint">Role</span>
-              <select class="select" name="role" required>
-                <option value="" selected disabled>Choose one…</option>
-                <option>Parent</option>
-                <option>Teacher</option>
-                <option>Admin / PTA</option>
-                <option>Other</option>
-              </select>
-            </label>
-          </div>
-          <div class="form__row form__row--full">
-            <label>
-              <span class="hint">Anything else? (optional)</span>
-              <textarea class="textarea" name="message" placeholder="What’s your scheduling headache?"></textarea>
-            </label>
-          </div>
-          <!-- Honeypot -->
-          <input type="text" name="_gotcha" style="display:none" tabindex="-1" autocomplete="off" />
-          <div class="form__actions">
-            <button class="btn btn--brand" type="submit">Request early access</button>
-            <span id="form-status" class="hint" role="status" aria-live="polite"></span>
-          </div>
-        </form>
-      </div>
+        <div class="form__row">
+          <input type="text" name="school" placeholder="School / Group (optional)">
+          <select name="role" required>
+            <option value="" disabled selected>Role</option>
+            <option>Parent</option>
+            <option>Teacher</option>
+            <option>Admin / PTA</option>
+            <option>Other</option>
+          </select>
+        </div>
+        <div class="form__row form__row--full">
+          <textarea name="message" placeholder="Anything else?"></textarea>
+        </div>
+        <div class="form__actions">
+          <button class="btn-brand" type="submit">Request early access</button>
+        </div>
+      </form>
     </div>
   </section>
 
-  <!-- ======================== Footer ======================== -->
-  <footer class="ftr">
+  <footer>
     <div class="wrap">© <span id="y"></span> Schoolduler — Built by parents, for parents.</div>
   </footer>
-
-  <script>
-    // Dynamic year
-    document.getElementById('y').textContent = new Date().getFullYear();
-
-    // Progressive enhancement: AJAX submit to Formspree for inline confirmation
-    (function(){
-      const form = document.getElementById('waitlist-form');
-      const status = document.getElementById('form-status');
-      if (!form) return;
-      form.addEventListener('submit', async function(e){
-        // If fetch not available, allow normal POST
-        if (!window.fetch) return;
-        e.preventDefault();
-        status.textContent = 'Sending…';
-        const data = new FormData(form);
-        try {
-          const res = await fetch(form.action, { method: 'POST', body: data, headers: { 'Accept': 'application/json' } });
-          if (res.ok) {
-            form.reset();
-            status.textContent = 'Thanks! You are on the list.';
-          } else {
-            status.textContent = 'Something went wrong. Please try again.';
-          }
-        } catch(err){
-          status.textContent = 'Network error. Please try again.';
-        }
-      });
-    })();
-  </script>
+  <script>document.getElementById('y').textContent=new Date().getFullYear()</script>
 </body>
 </html>
