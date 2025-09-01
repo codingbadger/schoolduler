@@ -427,6 +427,83 @@ nav[role="navigation"] {
 
 
 
+    /* ----- Calendar mock container ----- */
+.calendar-mock{
+  border:1px solid #eee; border-radius:16px; background:#fff;
+  padding:16px; max-width:900px; margin:32px auto; overflow:hidden;
+}
+.calendar-mock * { min-width:0; box-sizing:border-box; }
+
+/* Header */
+.calendar-mock .cal-head h3{
+  margin:0 0 4px; font-size:clamp(18px,2.6vw,22px); line-height:1.2;
+}
+.calendar-mock .cal-head .sub{
+  margin:0 0 12px; font-size:14px; opacity:.75;
+}
+
+/* Days of week row */
+.calendar-mock .cal-dow{
+  display:grid; grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:8px; font-size:12px; text-transform:uppercase; letter-spacing:.02em;
+  opacity:.7; margin-bottom:8px; padding:0 2px;
+}
+.calendar-mock .cal-dow span{ text-align:center; }
+
+/* Month grid */
+.calendar-mock .cal-grid{
+  display:grid; grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:8px; list-style:none; padding:0; margin:0;
+}
+.calendar-mock .day{
+  border:1px solid #eee; border-radius:12px; padding:10px; position:relative;
+  display:flex; flex-direction:column; gap:6px; min-height:84px; /* keeps tiles even */
+}
+.calendar-mock .day.is-empty{ background:linear-gradient(180deg,#fafafa,transparent); }
+
+/* Date number */
+.calendar-mock .date{
+  font-weight:600; font-size:14px; line-height:1; color:#333;
+}
+
+/* Events */
+.calendar-mock .event{
+  font-size:13px; line-height:1.25; padding:6px 8px; border-radius:8px;
+  border:1px solid #eaeaea; background:#f9fafb;
+  display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+}
+.calendar-mock .event.subtle{ background:#fcfcfd; border-style:dashed; }
+
+/* Prevent horizontal scroll on small screens */
+html, body { overflow-x:hidden; }
+
+/* ----- Mobile behaviour ----- */
+@media (max-width:640px){
+  .calendar-mock{ padding:12px; border-radius:14px; }
+  .calendar-mock .cal-dow{ display:none; } /* hide tiny weekday row on phones */
+
+  /* Switch to agenda list for readability */
+  .calendar-mock .cal-grid{
+    grid-template-columns:1fr; gap:10px;
+  }
+  .calendar-mock .day{
+    min-height:unset; padding:12px 12px 12px 48px; /* room for large date badge */
+  }
+  .calendar-mock .date{
+    position:absolute; left:12px; top:12px; width:28px; height:28px;
+    display:flex; align-items:center; justify-content:center;
+    background:#f2f5ff; border:1px solid #e3e8ff; border-radius:8px; font-size:13px;
+  }
+}
+
+/* ----- Tablet tweaks ----- */
+@media (min-width:641px) and (max-width:900px){
+  .calendar-mock .day{ min-height:72px; padding:8px; }
+  .calendar-mock .event{ font-size:12px; }
+}
+
+
+
     
   </style>
 </head>
@@ -495,27 +572,40 @@ nav[role="navigation"] {
       </div>
     </section>
 
-    <section class="mock" aria-label="Calendar example">
-      <div class="calendar">
-        <div class="cal-head">
-          <div class="cal-title">September — Schoolduler Family Calendar</div>
-          <div class="legend">
-            <span class="pill">Auto-added</span>
-            <span class="pill" style="background:rgba(134,239,172,.18); color:#d7ffe9; border-color:rgba(134,239,172,.55)">Reminder</span>
-          </div>
-        </div>
-        <div class="grid-cal" aria-hidden="true">
-          <div class="cell"><small>Mon 1</small><div class="event">Non-Uniform Day</div></div>
-          <div class="cell"><small>Tue 2</small></div>
-          <div class="cell"><small>Wed 3</small><div class="event ok">PE Kit — reminder 8pm</div></div>
-          <div class="cell"><small>Thu 4</small></div>
-          <div class="cell"><small>Fri 5</small><div class="event">Class Assembly · 2:00pm</div></div>
-          <div class="cell"><small>Sat 6</small></div>
-          <div class="cell"><small>Sun 7</small></div>
-        </div>
-      </div>
-      <p class="foot">Example: all events pulled from one forwarded newsletter + one WhatsApp screenshot.</p>
-    </section>
+    <section class="calendar-mock">
+  <header class="cal-head">
+    <h3>September — Schoolduler Family Calendar</h3>
+    <p class="sub">Example: all events pulled from one forwarded newsletter + one WhatsApp screenshot.</p>
+  </header>
+
+  <!-- Days of week -->
+  <div class="cal-dow" aria-hidden="true">
+    <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+  </div>
+
+  <!-- Month grid: add empty cells before 1st if month starts mid-week -->
+  <ol class="cal-grid" role="list">
+    <li class="day is-empty" aria-hidden="true"></li>
+    <li class="day is-empty" aria-hidden="true"></li>
+    <li class="day"><span class="date">1</span>
+      <div class="event subtle">Auto-added Reminder</div>
+    </li>
+    <li class="day"><span class="date">2</span>
+      <div class="event">Non-Uniform Day</div>
+    </li>
+    <li class="day"><span class="date">3</span></li>
+    <li class="day"><span class="date">4</span>
+      <div class="event subtle">PE Kit — reminder 8 pm</div>
+    </li>
+    <li class="day"><span class="date">5</span>
+      <div class="event">Class Assembly · 2:00 pm</div>
+    </li>
+    <li class="day"><span class="date">6</span></li>
+    <li class="day"><span class="date">7</span></li>
+    <!-- …continue the month as needed… -->
+  </ol>
+</section>
+
 
     <section class="pricing" id="pricing" aria-label="Pricing">
       <div class="grid">
