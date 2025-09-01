@@ -85,18 +85,146 @@
     a{color: var(--brand-2); text-decoration: none; border-bottom:1px dotted rgba(110,168,254,.45)}
     a:hover{opacity:.9}
 
-.form-status {
-  margin-top: 1rem;
-  font-size: 0.95rem;
-  font-weight: 500;
+
+
+
+    /* ---- Schoolduler Form: Scoped Reset & Theme ---- */
+.schoolduler-form {
+  --sd-primary: #382fff;
+  --sd-primary-hover: #2e26cc;
+  --sd-ring: #cfd0ff;
+  --sd-text: #111;
+  --sd-muted: #555;
+  --sd-bg: #fff;
+
+  /* layout */
+  max-width: 480px;
+  width: 100%;
+  margin: 2.5rem auto;
+  padding: 1.75rem;
+  background: var(--sd-bg);
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+
+  /* isolate from global flex/typography rules */
+  display: block;
+  position: relative;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--sd-text);
+  line-height: 1.4;
 }
 
-.form-status.success {
-  color: #2ecc71; /* green */
+.schoolduler-form * {
+  box-sizing: border-box;
 }
 
-.form-status.error {
-  color: #e74c3c; /* red */
+/* headings & copy */
+.schoolduler-form h2 {
+  margin: 0 0 0.25rem;
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--sd-primary);
+}
+
+.schoolduler-form .lead {
+  margin: 0 0 1.25rem;
+  color: var(--sd-muted);
+  font-size: 0.98rem;
+}
+
+/* fields */
+.schoolduler-form .field {
+  margin-bottom: 0.9rem;
+}
+
+.schoolduler-form label {
+  display: block;               /* fixes inline label wrapping */
+  margin-bottom: 0.4rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.schoolduler-form input,
+.schoolduler-form textarea {
+  appearance: none;             /* neutralize iOS/Chrome quirks */
+  -webkit-appearance: none;
+  width: 100%;
+  display: block;
+  padding: 0.68rem 0.8rem;
+  border: 1px solid #d6d6d6;    /* avoid theme borders */
+  border-radius: 10px;
+  background: #fff;
+  color: #111;
+  font: inherit;                /* inherit site font */
+  outline: none;
+  transition: box-shadow .15s ease, border-color .15s ease;
+}
+
+.schoolduler-form textarea {
+  min-height: 110px;
+  resize: vertical;
+}
+
+.schoolduler-form input::placeholder,
+.schoolduler-form textarea::placeholder {
+  color: #9aa0a6;
+}
+
+/* focus states */
+.schoolduler-form input:focus,
+.schoolduler-form textarea:focus {
+  border-color: var(--sd-primary);
+  box-shadow: 0 0 0 3px var(--sd-ring);
+}
+
+/* button */
+.schoolduler-form button {
+  width: 100%;
+  display: inline-block;
+  margin-top: 0.4rem;
+  padding: 0.85rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: var(--sd-primary);
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background .2s ease, transform .02s ease-in-out;
+}
+
+.schoolduler-form button:hover { background: var(--sd-primary-hover); }
+.schoolduler-form button:active { transform: translateY(1px); }
+.schoolduler-form button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* status text */
+.schoolduler-form .form-status {
+  margin-top: 0.9rem;
+  font-size: 0.96rem;
+  font-weight: 600;
+}
+.schoolduler-form .form-status.success { color: #1f9d55; }
+.schoolduler-form .form-status.error { color: #d64545; }
+
+/* optional: tidy up on narrow screens (already single-column) */
+@media (min-width: 560px) {
+  .schoolduler-form { padding: 2rem; }
+}
+
+/* if your page has a dark section, you can wrap the form in .dark to invert */
+.dark .schoolduler-form {
+  --sd-bg: #121317;
+  --sd-text: #e9eaee;
+  --sd-muted: #b7b9c3;
+  background: var(--sd-bg);
+  box-shadow: 0 6px 18px rgba(0,0,0,0.35);
+}
+.dark .schoolduler-form input,
+.dark .schoolduler-form textarea {
+  background: #1a1c22;
+  border-color: #2a2d36;
+  color: var(--sd-text);
 }
 
 
@@ -222,26 +350,33 @@
       <div class="card" style="max-width:760px; margin: 0 auto;">
 
 
-        <form action="https://formspree.io/f/myzdpnkz" method="POST" class="schoolduler-form" id="schooldulerForm">
+<form action="https://formspree.io/f/myzdpnkz" method="POST" class="schoolduler-form" id="schooldulerForm">
   <h2>Stay in the Loop</h2>
-  <p>Sign up to get early access and updates from Schoolduler.</p>
+  <p class="lead">Sign up to get early access and updates from Schoolduler.</p>
 
-  <label for="name">Name</label>
-  <input type="text" id="name" name="name" placeholder="Your name" required>
+  <div class="field">
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" placeholder="Your name" required>
+  </div>
 
-  <label for="email">Email</label>
-  <input type="email" id="email" name="_replyto" placeholder="your@email.com" required>
+  <div class="field">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="_replyto" placeholder="your@email.com" required>
+  </div>
 
-  <label for="message">Message (optional)</label>
-  <textarea id="message" name="message" placeholder="Tell us what you'd love to see..."></textarea>
+  <div class="field">
+    <label for="message">Message (optional)</label>
+    <textarea id="message" name="message" placeholder="Tell us what you'd love to see..."></textarea>
+  </div>
 
   <input type="hidden" name="_subject" value="New Schoolduler Landing Page Lead">
 
-  <button type="submit">Notify Me</button>
+  <button type="submit" id="sdSubmitBtn">Notify Me</button>
 
   <!-- Message placeholder -->
-  <p id="formStatus" class="form-status"></p>
+  <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
 </form>
+
 
         
         <p class="foot">Privacy-first. We never sell or share your data.</p>
@@ -271,33 +406,39 @@
   <script>
   const form = document.getElementById("schooldulerForm");
   const status = document.getElementById("formStatus");
+  const btn = document.getElementById("sdSubmitBtn");
 
-  form.addEventListener("submit", async function (event) {
+  form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const data = new FormData(form);
+    status.textContent = "";
+    status.className = "form-status";
+    btn.disabled = true;
 
     try {
       const response = await fetch(form.action, {
         method: form.method,
-        body: data,
+        body: new FormData(form),
         headers: { Accept: "application/json" }
       });
 
       if (response.ok) {
         status.textContent = "✅ Thanks, we’ll be in touch soon!";
-        status.className = "form-status success";
+        status.classList.add("success");
         form.reset();
       } else {
-        const result = await response.json();
+        const result = await response.json().catch(() => ({}));
         status.textContent = result.error || "⚠️ Oops! Something went wrong.";
-        status.className = "form-status error";
+        status.classList.add("error");
       }
-    } catch (err) {
+    } catch {
       status.textContent = "⚠️ Network error. Please try again.";
-      status.className = "form-status error";
+      status.classList.add("error");
+    } finally {
+      btn.disabled = false;
     }
   });
 </script>
+
 
   
 </body>
