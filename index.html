@@ -13,7 +13,7 @@
     header{display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-bottom:1px solid #1f2532;}
     .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:20px;}
     .brand img{height:50px;width:auto;}
-     a{margin-left:12px;padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:600;}
+     a, button {margin-left:12px;padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:600;}
     .btn-brand{background:linear-gradient(135deg,#8aa0ff,#6ee7b7);color:#0b0f16;}
     .btn-ghost{border:1px solid #1f2532;color:#e6eaf2;}
 
@@ -56,7 +56,7 @@
     .card h3{margin:0 0 6px;}
 
     .form{background:#0f1520;padding:20px;border-radius:16px;border:1px solid #1f2532;}
-    .form__row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+    .form__row{display:grid;grid-template-columns:1fr 1fr;gap:45px; padding: 5px;}
     .form__row--full{grid-template-columns:1fr;}
     input,select,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid #243048;background:#0b1220;color:#e6eaf2;}
     textarea{min-height:100px;}
@@ -136,7 +136,7 @@
         <li>✓ Email → calendar parsing</li>
         <li>✓ Basic event categories</li>
       </ul>
-      <a href="#waitlist" class="btn-brand">Get started</a>
+    <!--  <a href="#waitlist" class="btn-brand">Get started</a> -->
     </div>
 
     <!-- Plus -->
@@ -153,7 +153,7 @@
         <li>✓ Weekly email digest</li>
         <li>✓ Priority parsing & support</li>
       </ul>
-      <a href="#waitlist" class="btn-brand">Choose Plus</a>
+     <!-- <a href="#waitlist" class="btn-brand">Choose Plus</a> -->
     </div>
 
   </div>
@@ -168,7 +168,7 @@
           <input type="text" name="name" placeholder="Your name" required>
           <input type="email" name="email" placeholder="Email" required>
         </div>
-        <div class="form__row">
+       <!-- <div class="form__row">
           <input type="text" name="school" placeholder="School / Group (optional)">
           <select name="role" required>
             <option value="" disabled selected>Role</option>
@@ -177,7 +177,7 @@
             <option>Admin / PTA</option>
             <option>Other</option>
           </select>
-        </div>
+        </div> -->
         <div class="form__row form__row--full">
           <textarea name="message" placeholder="Anything else?"></textarea>
         </div>
