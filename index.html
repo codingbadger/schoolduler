@@ -109,6 +109,18 @@
         .form__actions{margin-top:12px;}
 
         footer{padding:20px 0;border-top:1px solid #1f2532;color:#a7b0c0;text-align:center;}
+
+
+        /* status text */
+        .schoolduler-form .form-status {
+            margin-top: 0.9rem;
+            font-size: 0.96rem;
+            font-weight: 600;
+        }
+        .schoolduler-form .form-status.success { color: #1f9d55; }
+        .schoolduler-form .form-status.error { color: #d64545; }
+        
+        
     </style>
 </head>
 <body>
@@ -257,7 +269,7 @@
             
             Stay in the loop</h2>
         <p>We are busy bringing our awesome idea to life. If you'd like to know when we are ready to launch, fill out the form below.</p>
-        <form action="https://formspree.io/f/myzdpnkz" method="POST" class="stack-16">
+        <form action="https://formspree.io/f/myzdpnkz" method="POST" class="stack-16 schoolduler-form" id="schooldulerForm">
         <div>
             <div class="form__row form__row--full">
                 <input type="text" name="name" placeholder="Your name" required>
@@ -288,9 +300,13 @@
 
 
             <div class="form__actions">
-                <button class="btn-brand" type="submit">Keep me updated</button>
+                <button class="btn-brand" id="sdSubmitBtn" type="submit">Keep me updated</button>
             </div>
         </div>
+
+            <!-- Message placeholder -->
+            <p id="formStatus" class="form-status" role="status" aria-live="polite"></p>
+            
         </form>
         <p class="foot" style="text-align:center;">
             <i class="fa-solid fa-shield-halved"></i>
@@ -315,6 +331,45 @@
         const referrer = document.getElementById("referrer");
         if (referrer) referrer.value = document.referrer || "";
     })();
+</script>
+
+<script>
+    const form = document.getElementById("schooldulerForm");
+    const status = document.getElementById("formStatus");
+    const btn = document.getElementById("sdSubmitBtn");
+
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        status.textContent = "";
+        status.className = "form-status";
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(form.action, {
+                method: form.method,
+                body: new FormData(form),
+                headers: { Accept: "application/json" }
+            });
+
+            if (response.ok) {
+                
+                status.textContent = "✅ Thanks, we’ll be in touch soon!";
+                status.classList.add("success");
+                form.reset();
+                if (window.fbq) fbq('track', 'Lead', {value: 0, currency: 'GBP'});
+
+            } else {
+                const result = await response.json().catch(() => ({}));
+                status.textContent = result.error || "⚠️ Oops! Something went wrong.";
+                status.classList.add("error");
+            }
+        } catch {
+            status.textContent = "⚠️ Network error. Please try again.";
+            status.classList.add("error");
+        } finally {
+            btn.disabled = false;
+        }
+    });
 </script>
 
 
