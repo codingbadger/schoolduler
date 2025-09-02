@@ -252,6 +252,16 @@
             <div class="form__row form__row--full ">
                 <textarea name="message" placeholder="Anything else?"></textarea>
             </div>
+
+            <input type="hidden" name="utm_source" id="utm_source">
+            <input type="hidden" name="utm_medium" id="utm_medium">
+            <input type="hidden" name="utm_campaign" id="utm_campaign">
+            <input type="hidden" name="utm_content" id="utm_content">
+            <input type="hidden" name="utm_term" id="utm_term">
+            <input type="hidden" name="ref" id="ref">
+            <input type="hidden" name="referrer" id="referrer">
+
+
             <div class="form__actions">
                 <button class="btn-brand" type="submit">Keep me updated</button>
             </div>
@@ -268,5 +278,20 @@
     <div class="wrap">© <span id="y"></span> Schoolduler — Built by parents, for parents.</div>
 </footer>
 <script>document.getElementById('y').textContent=new Date().getFullYear()</script>
+
+<script>
+    (function() {
+        const p = new URLSearchParams(location.search);
+        const set = k => {
+            const el = document.getElementById(k);
+            if (el) el.value = p.get(k) || "";
+        };
+        ["utm_source","utm_medium","utm_campaign","utm_content","utm_term","ref"].forEach(set);
+        const referrer = document.getElementById("referrer");
+        if (referrer) referrer.value = document.referrer || "";
+    })();
+</script>
+
+
 </body>
 </html>
